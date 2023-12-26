@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS100
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks100Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/08 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+
+<!-- 【農産企画支援】バッチ計画表印刷マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks1001Mapper">
+
+	<!-- 入力された配達年月回を条件に、バッチの存在検索を行う -->
+	<select id="getBatchNoByPnks100" parameterType="String" resultType="String">
+		SELECT
+			M3.BATCHNO
+		FROM
+			[nosan].NSMN010 M1 
+		INNER JOIN [nosan].NSMN020 M2 
+			ON M2.HAITATUYMT = #{haitatuYmt}
+			AND M2.CQKIKANO = M1.CQKIKANO
+			AND M2.KYSHINCD = M1.KYSHINCD
+			AND M2.DEL_FLG = '0' 
+		INNER JOIN [nosan].NSMM040 M3 
+			ON M3.BATCHFLG = '1' 
+			AND M2.BATCHNO = M3.BATCHNO
+			AND M3.DEL_FLG = '0'
+		WHERE
+			SUBSTRING(M1.SYUHINKB, 2, 1) = '5'
+			AND M1.DEL_FLG = '0'
+	</select>
+	
+	<!-- 配達年月と配達回より、バッチ計画表のデータを取得する -->
+	<select id="getBatchInfoByPnks10001" parameterType="String" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks10001ListItem">
+		SELECT
+			NSMN020.BATCHNO
+			, COUNT(NSMN020.KYSHINCD) AS ITEMSU
+			, SUM(NSMN020.KEIKAKSU) AS SURYO
+		FROM
+			[nosan].NSMN010
+		INNER JOIN [nosan].NSMN020
+			ON NSMN010.CQKIKANO = NSMN020.CQKIKANO 
+			AND NSMN010.KYSHINCD = NSMN020.KYSHINCD
+		INNER JOIN [nosan].NSMM040
+			ON NSMN020.BATCHNO = NSMM040.BATCHNO 
+		WHERE
+			NSMN010.HAITATUYMT = #{haitatuYmt}
+			AND SUBSTRING(NSMN010.SYUHINKB, 2, 1) = '5'
+			AND NSMM040.BATCHFLG = '1'
+		GROUP BY
+			NSMN020.BATCHNO
+		ORDER BY
+			NSMN020.BATCHNO
+	</select>
+	
+</mapper>

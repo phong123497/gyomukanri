@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS040
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks040Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/13 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】企画案内書印刷マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks040Mapper">
+
+		<!-- 管理マスタ取得 -->
+	<select id="getKanriMstByPnks040" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks040Entity">
+		SELECT
+			RENRAKUJIKO 		AS 	'contactJiko'
+			, RENRAKUKJ 		AS 	'contactaddNmHokubu'
+			, RENRAKUTEL 		AS 	'contactaddTelHokubu'
+			, RENRAKUFAX 		AS 	'contactaddFaxHokubu'
+			, NOHINBASHO 		AS 	'delvPlaceHokubu'
+			, NOHINKJ			AS 	'nohinskNmHokubu'
+			, NOHINTEL 			AS 	'nohinskTelHokubu'
+			, NOHINFAX 			AS 	'nohinskFaxHokubu'
+			, RENRAKUKJ2 		AS 	'contactaddNmNanbu'
+			, RENRAKUTEL2		AS 	'contactaddTelNanbu'
+			, RENRAKUFAX2		AS 	'contactaddFaxNanbu'
+			, NOHINBASHO2 		AS 	'delvPlaceNanbu'
+			, NOHINKJ2 			AS 	'nohinskNmNanbu'
+			, NOHINTEL2 		AS 	'nohinskTelNanbu'
+			, NOHINFAX2 		AS 	'nohinskFaxNanbu'
+		FROM
+			[nosan].NSMM010
+		WHERE
+			SYSCD ='QCOOP'
+	</select>
+	
+	<!-- 企画案内情報マスタ取得 -->
+	<select id="getProjAnnaiInfByPnks040" parameterType="String" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks040Entity">
+		SELECT
+			KIKAYMDF 			AS 	'projKknStart'
+			, KIKAYMDT 			AS 	'projKknEnd'
+			, KAKAKKIGEN 		AS 	'kakakuAnsKgn'
+		FROM
+			[nosan].NSMT050
+		WHERE
+			CQKIKANO = #{cqkikano}
+	</select>
+	
+	
+	<!-- 企画回マスタ存在チェック -->
+	<select id="getCqkikanoByPnks040" parameterType="String" resultType="int">
+		SELECT 
+			COUNT(*) 
+		FROM 
+			[nosan].NSMT050
+		WHERE 
+			CQKIKANO = #{cqkikano}
+	</select>
+	
+	<!-- 管理マスタ更新 -->
+	<update id="updateKanriMstByPnks040" parameterType="Map">
+		UPDATE
+			[nosan].NSMM010
+		SET	
+			RENRAKUJIKO 		= #{contactJiko}
+			, RENRAKUKJ 		= #{contactaddNmHokubu}
+			, RENRAKUTEL 		= #{contactaddTelHokubu}
+			, RENRAKUFAX 		= #{contactaddFaxHokubu}
+			, NOHINBASHO 		= #{delvPlaceHokubu}
+			, NOHINKJ 			= #{nohinskNmHokubu}
+			, NOHINTEL 			= #{nohinskTelHokubu}
+			, NOHINFAX 			= #{nohinskFaxHokubu}
+			, RENRAKUKJ2 		= #{contactaddNmNanbu}
+			, RENRAKUTEL2 		= #{contactaddTelNanbu}
+			, RENRAKUFAX2 		= #{contactaddFaxNanbu}
+			, NOHINBASHO2 		= #{delvPlaceNanbu}
+			, NOHINKJ2 			= #{nohinskNmNanbu}
+			, NOHINTEL2 		= #{nohinskTelNanbu}
+			, NOHINFAX2 		= #{nohinskFaxNanbu}
+			, KUSHN_USR 		= #{usr}
+			, KUSHN_PRGRM 		= #{prgrm}
+			, KUSHN_NCHJ 		= #{nchj}
+		WHERE
+			SYSCD = 'QCOOP'
+	</update>
+	
+	<!-- 企画案内情報マスタ更新 -->
+	<update id="updateProjAnnaiInfByPnks040" parameterType="Map">
+		UPDATE
+			[nosan].NSMT050
+		SET
+		 	KIKAYMDF 			= #{projKknStart}
+			, KIKAYMDT 			= #{projKknEnd}
+			, KAKAKKIGEN 		= #{kakakuAnsKgn}
+			, KUSHN_USR 		= #{usr}
+			, KUSHN_PRGRM 		= #{prgrm}
+			, KUSHN_NCHJ 		= #{nchj}
+		WHERE
+			CQKIKANO = #{cqProjNoStart}
+	</update>
+	
+	<!-- 企画案内書出力データ取得 -->
+	<select id="getProjAnnaiInfByPnks04001" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks04001Item">
+		SELECT
+		    NSMN020S.MAKERCD
+		    , NSMN020S.CQKIKANO
+		    , NSMN020S.KYSHINCD
+		    , NSMN020S.TOKAIKYUCD
+		    , NSMN020S.SANTICD
+		    , NSMT050.SEKIKANO
+		    , NSMN010.CQSHINCD AS 'cqShinCd'
+		    , NSMN010.JANCD
+		    , NSMN010.SHINKJ
+		    , NSMN010.KIKAKKJ
+		    , ISNULL(NSMM060.MAKERKJ, '【未設定】') AS 'makerkj'
+		    , NSMM060.FAXNO
+		    , NSMT030.TOKAIKYUKJ
+		    , NSMT020.SANTIKJ
+		    , NSMN020S.KAKOKBN
+		    , NSMM020B.KJRM AS NOHINNM
+		    , ISNULL(RTRIM(NSMN020S.KIKAKB), '0') AS 'kikakb'
+		    , SUBSTRING(NSMN010.SYUHINKB, 2, 1) AS 'hinonkb'
+		    , NSMM020A.KJRM AS HINONNM
+		    , CASE 
+		        WHEN NSMN020S.EHU_SU = 0 
+		            THEN '0' 
+		        ELSE '1' 
+		        END AS 'ehu'
+		    , CASE 
+		        WHEN NSMN020S.SAGA_SU = 0 
+		            THEN '0' 
+		        ELSE '1' 
+		        END AS 'saga'
+		    , CASE 
+		        WHEN NSMN020S.RARA_SU = 0 
+		            THEN '0' 
+		        ELSE '1' 
+		        END AS 'rara'
+		    , CASE 
+		        WHEN NSMN020S.OITA_SU = 0 
+		            THEN '0' 
+		        ELSE '1' 
+		        END AS 'oita'
+		    , CASE 
+		        WHEN NSMN020S.SUIKOSYA_SU = 0 
+		            THEN '0' 
+		        ELSE '1' 
+		        END AS 'suikosya'
+		    , CASE 
+		        WHEN NSMN020S.MIYAZAKI_SU = 0 
+		            THEN '0' 
+		        ELSE '1' 
+		        END AS 'miyazaki'
+		    , CASE 
+		        WHEN NSMN020S.KAGOSIMA_SU = 0 
+		            THEN '0' 
+		        ELSE '1' 
+		        END AS 'kagosima'
+		    , CASE 
+		        WHEN NSMN020S.OKINAWA_SU = 0 
+		            THEN '0' 
+		        ELSE '1' 
+		        END AS 'okinawa'
+		    , '1' AS 'cntJigkb' 
+		FROM
+		    ( 
+		        SELECT
+		            ISNULL(NSMN020.MAKERCD, 'ZZZZ') AS MAKERCD
+		            , NSMN020.CQKIKANO
+		            , NSMN020.KYSHINCD
+		            , ISNULL(NSMN020.TOKAIKYUCD, 'ZZZ') AS TOKAIKYUCD
+		            , ISNULL(NSMN020.SANTICD, 'ZZZ') AS SANTICD
+		            , MAX(NSMN020.KAKOKBN) AS KAKOKBN
+		            , MAX(NSMN020.KIKAKB) AS KIKAKB
+		            , SUM( 
+		                CASE NSMN020.SEICD 
+		                    WHEN '8792' THEN 1 
+		                    ELSE 0 
+		                    END
+		            ) AS EHU_SU
+		            , SUM( 
+		                CASE NSMN020.SEICD 
+		                    WHEN '9119' THEN 1 
+		                    ELSE 0 
+		                    END
+		            ) AS SAGA_SU
+		            , SUM( 
+		                CASE NSMN020.SEICD 
+		                    WHEN '9232' THEN 1 
+		                    ELSE 0 
+		                    END
+		            ) AS RARA_SU
+		            , SUM( 
+		                CASE NSMN020.SEICD 
+		                    WHEN '9621' THEN 1 
+		                    ELSE 0 
+		                    END
+		            ) AS OITA_SU
+		            , SUM( 
+		                CASE NSMN020.SEICD 
+		                    WHEN '9461' THEN 1 
+		                    ELSE 0 
+		                    END
+		            ) AS SUIKOSYA_SU
+		            , SUM( 
+		                CASE NSMN020.SEICD 
+		                    WHEN '9720' THEN 1 
+		                    ELSE 0 
+		                    END
+		            ) AS MIYAZAKI_SU
+		            , SUM( 
+		                CASE NSMN020.SEICD 
+		                    WHEN '9829' THEN 1 
+		                    ELSE 0 
+		                    END
+		            ) AS KAGOSIMA_SU
+		            , SUM( 
+		                CASE NSMN020.SEICD 
+		                    WHEN '9959' THEN 1 
+		                    ELSE 0 
+		                    END
+		            ) AS OKINAWA_SU 
+		        FROM
+		            [nosan].NSMN020 NSMN020 
+		        WHERE
+		            NSMN020.DEL_FLG = '0' 
+		            <if test="makerStart != null and makerEnd != null"> 
+		                AND MAKERCD <![CDATA[ >= ]]> #{makerStart} 
+		                AND MAKERCD <![CDATA[ <= ]]> #{makerEnd} 
+		            </if>
+		            <if test="makerStart != null and makerEnd == null"> 
+		                AND MAKERCD <![CDATA[ >= ]]> #{makerStart} 
+		            </if>
+		            <if test="makerStart == null and makerEnd != null"> 
+		                AND MAKERCD <![CDATA[ <= ]]> #{makerEnd}
+		             </if> 
+		        GROUP BY
+		            NSMN020.MAKERCD
+		            , NSMN020.CQKIKANO
+		            , NSMN020.KYSHINCD
+		            , NSMN020.TOKAIKYUCD
+		            , NSMN020.SANTICD
+		    ) NSMN020S 
+		    INNER JOIN [nosan].NSMN010 NSMN010 
+		        ON NSMN010.KYSHINCD = NSMN020S.KYSHINCD 
+		        AND NSMN010.CQKIKANO = NSMN020S.CQKIKANO 
+		    INNER JOIN [nosan].NSMT050 NSMT050 
+		        ON NSMN010.CQKIKANO = NSMT050.CQKIKANO 
+		    LEFT JOIN [nosan].NSMM060 NSMM060 
+		        ON NSMM060.MAKERCD = NSMN020S.MAKERCD 
+		    LEFT JOIN [nosan].NSMT020 NSMT020 
+		        ON NSMT020.MAKERCD = NSMN020S.MAKERCD 
+		        AND NSMT020.KYSHINCD = NSMN020S.KYSHINCD 
+		        AND NSMT020.SANTICD = NSMN020S.SANTICD 
+		    LEFT JOIN [nosan].NSMT030 NSMT030 
+		        ON NSMT030.MAKERCD = NSMN020S.MAKERCD 
+		        AND NSMT030.KYSHINCD = NSMN020S.KYSHINCD 
+		        AND NSMT030.TOKAIKYUCD = NSMN020S.TOKAIKYUCD 
+		    LEFT JOIN [nosan].NSMM020 NSMM020A 
+		        ON NSMM020A.RECKB = '07' 
+		        AND RTRIM(NSMM020A.MEICD) = SUBSTRING(NSMN010.SYUHINKB, 2, 1) 
+		    LEFT JOIN [nosan].NSMM020 NSMM020B 
+		        ON NSMM020B.RECKB = '06' 
+		        AND NSMM020B.MEICD = NSMN020S.KAKOKBN 
+		WHERE
+		    NSMN010.DEL_FLG = '0' 
+		    <if test="prtChohyo == 1"> 
+		    	AND NSMT050.CQKIKANO <![CDATA[ >= ]]> #{cqProjNoStart} 
+		    	AND NSMT050.CQKIKANO <![CDATA[ <= ]]> #{cqProjNoEnd} 
+		    </if>
+		    <if test="prtChohyo == 2"> 
+		    	AND NSMT050.CQKIKANO = #{cqProjNoStart} 
+		    </if>
+	</select>
+	
+</mapper>

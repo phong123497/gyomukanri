@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS010
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks010Mapper
+//
+// <<Modification History>>
+// Version  | Date	   | Updated By		   | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/10 | ＡＭＣ			   | 新規作成
+// ================================================================================
+-->
+
+<!-- 【農産企画支援】PEACEデータ取込マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks010Mapper">
+	
+	<!-- PEACEデータ取込ワークを削除する -->
+	<delete id="deletePeaceDataWorkByPnks010" parameterType="String">
+		DELETE FROM [nosan].NSWT010
+			WHERE
+				[nosan].NSWT010.USERID = #{loginUserId}
+	</delete>
+	
+	<!-- 共同購入商品マスタデータを取得する -->
+	<select id="getDWHInfoByPnks010" parameterType="java.util.List" resultType="java.util.Map">
+		SELECT
+			<!-- 共同購入商品コード -->
+			T1.KYSHINCD
+			<!-- コープ九州商品コード -->
+			, T1.CQSHINCD
+			<!-- 部門コード -->
+			, T2.BUMONCD
+			<!-- 大分類 -->
+			, T1.DAIBNCD
+			<!-- 中分類 -->
+			, T1.TYUBNCD
+			<!-- 小分類 -->
+			, T1.SYOBNCD
+			<!-- 集品区分 -->
+			, T1.SYUHINKB
+			<!-- ブランド区分 -->
+			, T1.BRKB
+		FROM
+			<!-- 共同購入商品マスタ -->
+			[gyomu].MSTKYSHM T1
+			<!-- 商品マスタ -->
+		INNER JOIN [gyomu].MSTSHINM T2
+			ON T1.CQSHINCD = T2.CQSHINCD
+		WHERE
+			1 = 1
+			<foreach collection="shoHinCodeList" item="shoHinCode" open="AND T1.KYSHINCD IN (" separator="," close=")">
+				#{shoHinCode}
+			</foreach>
+	</select>
+	
+	<!-- PEACEデータ取込ワークにデータを登録する -->
+	<insert id="insertPeaceDataWorkByPnks010" parameterType="java.util.Map">
+		INSERT 
+			INTO [nosan].NSWT010( 
+				<!-- ユーザーコード -->
+				USERID
+				<!-- ＣＱ企画番号 -->
+				, CQKIKANO
+				<!-- 共同購入商品コード -->
+				, KYSHINCD
+				<!-- ＣＱ商品コード -->
+				, CQSHINCD
+				<!-- ＪＡＮコード -->
+				, JANCD
+				<!-- 定催区分 -->
+				, TESAIKB
+				<!-- 部門コード -->
+				, BUMONCD
+				<!-- 大分類 -->
+				, DAIBNCD
+				<!-- 中分類 -->
+				, TYUBNCD
+				<!-- 小分類 -->
+				, SYOBNCD
+				<!-- 集品区分 -->
+				, SYUHINKB
+				<!-- 商品名漢字 -->
+				, SHINKJ
+				<!-- 規格名漢字 -->
+				, KIKAKKJ
+				<!-- 入数 -->
+				, IRISU
+				<!-- 週・特価 -->
+				, KIKAKB
+				<!-- ブランド区分 -->
+				, BRKB
+				<!-- 企画単協 エフ -->
+				, EHU
+				 <!-- 企画単協 さが -->
+				, SAGA
+				<!-- 企画単協 ララ -->
+				, RARA
+				 <!-- 企画単協 おおいた -->
+				, OITA
+				<!-- 企画単協 水光社 -->
+				, SUIKOSYA
+				<!-- 企画単協 みやざき -->
+				, MIYAZAKI
+				<!-- 企画単協 かごしま -->
+				, KAGOSIMA
+				 <!-- 企画単協 おきなわ -->
+				, OKINAWA
+				<!-- 仕入先コード -->
+				, SIRECD
+				<!-- 二次帳合先コード -->
+				, HATUCD
+				<!-- 産地名 -->
+				, SANTIKJ
+				<!-- 企画小枝番 -->
+				, KIKAEDA
+				<!-- 削除フラグ -->
+				, DEL_FLG
+				<!-- 作成ユーザー -->
+				, SKSI_USR
+				<!-- 作成プログラム -->
+				, SKSI_PRGRM
+				<!-- 作成日時 -->
+				, SKSI_NCHJ
+				<!-- 更新ユーザー -->
+				, KUSHN_USR
+				 <!-- 更新プログラム -->
+				, KUSHN_PRGRM
+				<!-- 更新日時 -->
+				, KUSHN_NCHJ
+			) VALUES ( 
+				<!-- ユーザーコード -->
+				#{USERID}
+				<!-- ＣＱ企画番号 -->
+				, #{CQKIKANO}
+				<!-- 共同購入商品コード -->
+				, #{KYSHINCD}
+				<!-- ＣＱ商品コード -->
+				, #{CQSHINCD}
+				<!-- ＪＡＮコード -->
+				, #{JANCD}
+				<!-- 定催区分 -->
+				, #{TESAIKB}
+				<!-- 部門コード -->
+				, #{BUMONCD}
+				<!-- 大分類 -->
+				, #{DAIBNCD}
+				<!-- 中分類 -->
+				, #{TYUBNCD}
+				<!-- 小分類 -->
+				, #{SYOBNCD}
+				<!-- 集品区分 -->
+				, #{SYUHINKB}
+				<!-- 商品名漢字 -->
+				, #{SHINKJ}
+				<!-- 規格名漢字 -->
+				, #{KIKAKKJ}
+				<!-- 入数 -->
+				, #{IRISU}
+				<!-- 週・特価 -->
+				, #{KIKAKB}
+				<!-- ブランド区分 -->
+				, #{BRKB}
+				<!-- 企画単協 エフ -->
+				, #{EHU}
+				<!-- 企画単協 さが -->
+				, #{SAGA}
+				<!-- 企画単協 ララ -->
+				, #{RARA}
+				<!-- 企画単協 おおいた -->
+				, #{OITA}
+				<!-- 企画単協 水光社 -->
+				, #{SUIKOSYA}
+				<!-- 企画単協 みやざき -->
+				, #{MIYAZAKI}
+				<!-- 企画単協 かごしま -->
+				, #{KAGOSIMA}
+				<!-- 企画単協 おきなわ -->
+				, #{OKINAWA}
+				<!-- 仕入先コード -->
+				, #{SIRECD}
+				<!-- 二次帳合先コード -->
+				, #{HATUCD}
+				<!-- 産地名 -->
+				, #{SANTIKJ}
+				<!-- 企画小枝番 -->
+				, #{KIKAEDA}
+				<!-- 削除フラグ -->
+				, '0'
+				<!-- 作成ユーザー --> 
+				, #{SKSI_USR}
+				<!-- 作成プログラム -->
+				, #{SKSI_PRGRM}
+				<!-- 作成日時 -->
+				, #{SKSI_NCHJ}
+				<!-- 更新ユーザー -->
+				, #{KUSHN_USR}
+				<!-- 更新プログラム -->
+				, #{KUSHN_PRGRM}
+				<!-- 更新日時 -->
+				, #{KUSHN_NCHJ}
+			)
+	</insert>
+	
+	<!-- 企画小枝番リストを取得する -->
+	<select id="getKikaEdaListByPnks010" parameterType="String" resultType="String">
+		SELECT
+			KIKAEDA
+		FROM
+			<!-- PEACEデータ取込ワーク -->
+			[nosan].NSWT010
+		WHERE
+			USERID = #{loginUserId}
+		GROUP BY
+			KIKAEDA
+		ORDER BY
+			KIKAEDA
+	</select>
+	
+	<!-- 農産企画商品マスタを作成する -->
+	<select id="createGoodsMasterByPnks010" parameterType="java.util.Map" statementType="CALLABLE">
+		{
+			CALL [nosan].NSSP010(
+				#{inUSERID, mode=IN, jdbcType=VARCHAR},
+				#{inPRGRM, mode=IN, jdbcType=VARCHAR}
+			)
+		}
+	</select>
+</mapper>

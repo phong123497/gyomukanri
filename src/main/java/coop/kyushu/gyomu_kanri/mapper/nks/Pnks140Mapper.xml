@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS140
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks140Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/06 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】メーカーマスタメンテナンスマッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks140Mapper">
+
+	<!-- メーカーマスタ情報取得 -->
+	<select id="getMakerInfoByPnks140" parameterType="String" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks140Entity">
+		SELECT
+			MAKERCD
+			, MAKERKJ         								AS	'makerNm'
+			, MAKERRKJ        								AS	'makerRyakusho'
+			, TELNO
+			, FAXNO
+			, NYUKHM          								AS	'delvTime'
+			, PASSWORD        								AS	'password'
+			, SIRECD          								AS	'toriskCd'
+			, FORMAT(KUSHN_NCHJ, 'yyyy/MM/dd HH:mm:ss.fff')	AS	'updDatm'
+		FROM
+			[nosan].NSMM060
+		WHERE
+			MAKERCD = #{makerCd}
+			AND	DEL_FLG = '0'
+		ORDER BY
+			MAKERCD
+	</select>
+	
+	<!-- メーカーマスタ情報登録 -->
+	<insert id="insertMakerInfoByPnks140" parameterType="Map">
+		INSERT
+		INTO [nosan].NSMM060 (
+			MAKERCD
+			, MAKERKJ
+			, MAKERRKJ
+			, TELNO
+			, FAXNO
+			, NYUKHM
+			, PASSWORD
+			, TORITEIFLG
+			, SIRECD
+			, NOUHINSAKIKBN
+			, DEL_FLG
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		)
+		VALUES (
+			#{makerCd}
+			, #{makerNm}
+			, #{makerRyakusho}
+			, #{telNo}
+			, #{faxNo}
+			, RIGHT(#{delvTime},  4)
+			, #{password}
+			, '0'
+			, #{toriskCd}
+			, '1'
+			, '0'
+			, #{usr}
+			, #{prgrm}
+			, #{nchj }
+			, #{usr}
+			, #{prgrm}
+			, #{nchj}
+		)
+	</insert>
+
+	<!-- メーカーマスタ情報更新 -->
+	<update id="updateMakerByPnks140" parameterType="Map">
+		UPDATE
+			[nosan].NSMM060
+		SET
+			MAKERKJ         = #{makerNm}
+			, MAKERRKJ      = #{makerRyakusho}
+			, TELNO         = #{telNo}
+			, FAXNO         = #{faxNo}
+			, NYUKHM        = RIGHT(#{delvTime},  4)
+			, PASSWORD      = #{password}
+			, SIRECD        = #{toriskCd}
+			, KUSHN_USR     = #{usr}
+			, KUSHN_PRGRM   = #{prgrm}
+			, KUSHN_NCHJ    = #{nchj}
+		WHERE
+			MAKERCD = #{makerCd}
+	</update>
+</mapper>

@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PCSK050
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pcsk050Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/18 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【コープ九州商管】センター商管表出力マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.csk.Pcsk050Mapper">
+
+	<sql id="fromSql">
+		<if test="shubt == 0">
+			FROM
+			<choose>
+				<when test="skeiTani == 0">
+					[shokan].商管集計単品別
+				</when>
+				<when test="skeiTani == 1">
+					[shokan].商管集計店舗分類別
+				</when>
+				<when test="skeiTani == 2">
+					[shokan].商管集計無店舗分類別
+				</when>
+				<when test="skeiTani == 3">
+					[shokan].商管集計部門別
+				</when>
+			</choose>
+		</if>
+		<if test="shubt == 1">
+			FROM
+			<choose>
+				<when test="skeiTani == 0">
+					[shokan].商管集計単品別財務
+				</when>
+				<when test="skeiTani == 1">
+					[shokan].商管集計店舗分類別財務
+				</when>
+				<when test="skeiTani == 2">
+					[shokan].商管集計無店舗分類別財務
+				</when>
+				<when test="skeiTani == 3">
+					[shokan].商管集計部門別財務
+				</when>
+			</choose>
+		</if>
+    </sql>
+    
+	<!-- 単月単品集計取得する。 -->
+	<select id="getTangetuMakeTanpinByPcsk050" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk05001Entity">
+		SELECT 
+			MAX(KYM)       AS KYM,
+			CQSHINCD       AS SHINCD,
+			MAX(SHINNM)    AS SHINNM,
+			DAIBNCD        AS CATGCD,
+			SUM(SZAI_SU)   AS SZAISU,
+			SUM(SZAI_GAK)  AS SZAIGAK,
+			SUM(SIRE_SU)   AS SIRESU,
+			SUM(SIRE_GAK)  AS SIREGAK,
+			SUM(KYOK_SU)   AS KYOKSU,
+			SUM(KYOK_GAK)  AS KYOKGAK,
+			SUM(HAIK_SU)   AS HAIKSU,
+			SUM(HAIK_GAK)  AS HAIKGAK,
+			SUM(KEIH_SU)   AS KEIHSU,
+			SUM(KEIH_GAK)  AS KEIHGAK,
+			SUM(FRIN_SU)   AS FRINSU,
+			SUM(FRIN_GAK)  AS FRINGAK,
+			SUM(FRIS_SU)   AS FRISSU,
+			SUM(FRIS_GAK)  AS FRISGAK,
+			MAX(SIRE_TANK) AS SIRETANK,
+			SUM(MZAI_SU)   AS MZAISU,
+			SUM(MZAI_GAK)  AS MZAIGAK,
+			SUM(SEKI_SU)   AS SEKISU,
+			SUM(SEKI_GAK)  AS SEKIGAK,
+			SUM(HZAI_SU)   AS HZAISU,
+			SUM(HZAI_GAK)  AS HZAIGAK
+		<include refid="fromSql"/>
+		WHERE
+			KYM = #{targetYm}
+			<choose>
+				<when test="mngTani == 1">
+					AND JIGYOSKB = '0'
+				</when>
+				<when test="mngTani == 2">
+					AND JIGYOSKB = '1'
+				</when>
+				<when test="mngTani == 3">
+					AND CNTJIGCD = #{cntrCd}
+				</when>
+			</choose>
+		GROUP BY
+			CQSHINCD
+			,DAIBNCD
+		ORDER BY
+			CQSHINCD
+			,DAIBNCD
+	</select>
+	
+	<!-- 単月集計取得する。 -->
+	<select id="getTangetuMakeByPcsk050" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk05001Entity">
+		SELECT 
+			MAX(KYM)       AS KYM,
+			CQSHINCD       AS SHINCD,
+			MAX(SHINNM)    AS SHINNM,
+			SUM(SZAI_SU)   AS SZAISU,
+			SUM(SZAI_GAK)  AS SZAIGAK,
+			SUM(SIRE_SU)   AS SIRESU,
+			SUM(SIRE_GAK)  AS SIREGAK,
+			SUM(KYOK_SU)   AS KYOKSU,
+			SUM(KYOK_GAK)  AS KYOKGAK,
+			SUM(HAIK_SU)   AS HAIKSU,
+			SUM(HAIK_GAK)  AS HAIKGAK,
+			SUM(KEIH_SU)   AS KEIHSU,
+			SUM(KEIH_GAK)  AS KEIHGAK,
+			SUM(FRIN_SU)   AS FRINSU,
+			SUM(FRIN_GAK)  AS FRINGAK,
+			SUM(FRIS_SU)   AS FRISSU,
+			SUM(FRIS_GAK)  AS FRISGAK,
+			MAX(SIRE_TANK) AS SIRETANK,
+			SUM(MZAI_SU)   AS MZAISU,
+			SUM(MZAI_GAK)  AS MZAIGAK,
+			SUM(SEKI_SU)   AS SEKISU,
+			SUM(SEKI_GAK)  AS SEKIGAK,
+			SUM(HZAI_SU)   AS HZAISU,
+			SUM(HZAI_GAK)  AS HZAIGAK
+		<include refid="fromSql"/>
+		WHERE
+			KYM = #{targetYm}
+			<choose>
+				<when test="mngTani == 1">
+					AND JIGYOSKB = '0'
+				</when>
+				<when test="mngTani == 2">
+					AND JIGYOSKB = '1'
+				</when>
+				<when test="mngTani == 3">
+					AND CNTJIGCD = #{cntrCd}
+				</when>
+			</choose>
+		GROUP BY
+			CQSHINCD
+	</select>
+	
+	<!-- 期間単品集計取得する。 -->
+	<select id="getKikanMakeTanpinByPcsk050" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk05001Entity">
+		SELECT
+			#{startKymWk} AS STARTKYM,
+			#{endKymWk} AS ENDKYM,
+			A.CQSHINCD AS SHINCD,
+			A.SHINNM AS SHINNM,
+			A.DAIBNCD AS CATGCD,
+			A.SIRE_SU AS SIRESU,
+			A.SIRE_GAK AS SIREGAK,
+			A.KYOK_SU AS KYOKSU,
+			A.KYOK_GAK AS KYOKGAK,
+			A.HAIK_SU AS HAIKSU,
+			A.HAIK_GAK AS HAIKGAK,
+			A.KEIH_SU AS KEIHSU,
+			A.KEIH_GAK AS KEIHGAK,
+			A.FRIN_SU AS FRINSU,
+			A.FRIN_GAK AS FRINGAK,
+			A.FRIS_SU AS FRISSU,
+			A.FRIS_GAK AS FRISGAK,
+			A.SIRE_TANK AS SIRETANK,
+			COALESCE(B.SZAI_SU, 0) AS SZAISU,
+			COALESCE(B.SZAI_GAK, 0) AS SZAIGAK,
+			COALESCE(C.SEKI_SU, 0) AS SEKISU,
+			COALESCE(C.SEKI_GAK, 0) AS SEKIGAK,
+			COALESCE(C.MZAI_SU, 0) AS MZAISU,
+			COALESCE(C.MZAI_GAK, 0) AS MZAIGAK,
+			COALESCE(C.HZAI_SU, 0) AS HZAISU,
+			COALESCE(C.HZAI_GAK, 0) AS HZAIGAK
+		FROM (
+				SELECT
+					CQSHINCD,
+					MAX(SHINNM) as SHINNM,
+					DAIBNCD,
+					SUM(SIRE_SU) as SIRE_SU,
+					SUM(SIRE_GAK) as SIRE_GAK,
+					SUM(KYOK_SU) as KYOK_SU,
+					SUM(KYOK_GAK) as KYOK_GAK,
+					SUM(HAIK_SU) as HAIK_SU,
+					SUM(HAIK_GAK) as HAIK_GAK,
+					SUM(KEIH_SU) as KEIH_SU,
+					SUM(KEIH_GAK) as KEIH_GAK,
+					SUM(FRIN_SU) as FRIN_SU,
+					SUM(FRIN_GAK) as FRIN_GAK,
+					SUM(FRIS_SU) as FRIS_SU,
+					SUM(FRIS_GAK) as FRIS_GAK,
+					MAX(SIRE_TANK) as SIRE_TANK
+				FROM 
+					<if test="shubt == 0">
+						[shokan].商管集計単品別
+					</if>
+					<if test="shubt == 1">
+						[shokan].商管集計単品別財務
+					</if>
+				WHERE
+					KYM BETWEEN #{startKymWk} AND #{endKymWk}
+					<choose>
+						<when test="mngTani == 1">
+							AND JIGYOSKB = '0'
+						</when>
+						<when test="mngTani == 2">
+							AND JIGYOSKB = '1'
+						</when>
+						<when test="mngTani == 3">
+							AND CNTJIGCD = #{cntrCd}
+						</when>
+					</choose>
+				GROUP BY 
+					CQSHINCD
+					,DAIBNCD
+			) A
+			LEFT JOIN (
+				SELECT
+					CQSHINCD,
+					DAIBNCD,
+					SUM(ISNULL(SZAI_SU,0))   as SZAI_SU,
+					SUM(ISNULL(SZAI_GAK,0))  as SZAI_GAK
+				FROM 
+					<if test="shubt == 0">
+						[shokan].商管集計単品別
+					</if>
+					<if test="shubt == 1">
+						[shokan].商管集計単品別財務
+					</if>
+				WHERE 
+					KYM = #{startKymWk}
+					<choose>
+						<when test="mngTani == 1">
+							AND JIGYOSKB = '0'
+						</when>
+						<when test="mngTani == 2">
+							AND JIGYOSKB = '1'
+						</when>
+						<when test="mngTani == 3">
+							AND CNTJIGCD = #{cntrCd}
+						</when>
+					</choose>
+				GROUP BY 
+					CQSHINCD
+					,DAIBNCD
+			) B ON A.CQSHINCD = B.CQSHINCD AND A.DAIBNCD = B.DAIBNCD
+			
+			LEFT JOIN (
+				SELECT
+					CQSHINCD,
+					DAIBNCD,
+					SUM(ISNULL(MZAI_SU,0))   as MZAI_SU ,
+					SUM(ISNULL(MZAI_GAK,0))  as MZAI_GAK,
+					SUM(ISNULL(HZAI_SU,0))   as HZAI_SU ,
+					SUM(ISNULL(HZAI_GAK,0))  as HZAI_GAK,
+					Sum(ISNULL(SEKI_SU,0))   as SEKI_SU,
+					Sum(ISNULL(SEKI_GAK,0))  as SEKI_GAK
+				FROM 
+					<if test="shubt == 0">
+						[shokan].商管集計単品別
+					</if>
+					<if test="shubt == 1">
+						[shokan].商管集計単品別財務
+					</if>
+				WHERE 
+					KYM = #{endKymWk}
+					<choose>
+						<when test="mngTani == 1">
+							AND JIGYOSKB = '0'
+						</when>
+						<when test="mngTani == 2">
+							AND JIGYOSKB = '1'
+						</when>
+						<when test="mngTani == 3">
+							AND CNTJIGCD = #{cntrCd}
+						</when>
+					</choose>
+				GROUP BY 
+					CQSHINCD
+					,DAIBNCD
+			) C ON A.CQSHINCD = C.CQSHINCD AND A.DAIBNCD = C.DAIBNCD
+		ORDER BY 
+			SHINCD
+			,CATGCD
+	</select>
+	
+	<!-- 期間集計取得する。 -->
+	<select id="getKikanMakeByPcsk050" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk05001Entity">
+		SELECT
+			#{startKymWk} AS STARTKYM,
+			#{endKymWk} AS ENDKYM,
+			A.CQSHINCD AS SHINCD,
+			A.SHINNM AS SHINNM,
+			A.SIRE_SU AS SIRESU,
+			A.SIRE_GAK AS SIREGAK,
+			A.KYOK_SU AS KYOKSU,
+			A.KYOK_GAK AS KYOKGAK,
+			A.HAIK_SU AS HAIKSU,
+			A.HAIK_GAK AS HAIKGAK,
+			A.KEIH_SU AS KEIHSU,
+			A.KEIH_GAK AS KEIHGAK,
+			A.FRIN_SU AS FRINSU,
+			A.FRIN_GAK AS FRINGAK,
+			A.FRIS_SU AS FRISSU,
+			A.FRIS_GAK AS FRISGAK,
+			A.SIRE_TANK AS SIRETANK,
+			B.SZAI_SU AS SZAISU,
+			B.SZAI_GAK AS SZAIGAK,
+			C.SEKI_SU AS SEKISU,
+			C.SEKI_GAK AS SEKIGAK,
+			C.MZAI_SU AS MZAISU,
+			C.MZAI_GAK AS MZAIGAK,
+			C.HZAI_SU AS HZAISU,
+			C.HZAI_GAK AS HZAIGAK
+		FROM (
+				SELECT
+					CQSHINCD,
+					MAX(SHINNM) as SHINNM,
+					SUM(SIRE_SU) as SIRE_SU,
+					SUM(SIRE_GAK) as SIRE_GAK,
+					SUM(KYOK_SU) as KYOK_SU,
+					SUM(KYOK_GAK) as KYOK_GAK,
+					SUM(HAIK_SU) as HAIK_SU,
+					SUM(HAIK_GAK) as HAIK_GAK,
+					SUM(KEIH_SU) as KEIH_SU,
+					SUM(KEIH_GAK) as KEIH_GAK,
+					SUM(FRIN_SU) as FRIN_SU,
+					SUM(FRIN_GAK) as FRIN_GAK,
+					SUM(FRIS_SU) as FRIS_SU,
+					SUM(FRIS_GAK) as FRIS_GAK,
+					MAX(SIRE_TANK) as SIRE_TANK
+				<include refid="fromSql"/>
+				WHERE
+					KYM BETWEEN #{startKymWk} AND #{endKymWk}
+					<choose>
+						<when test="mngTani == 1">
+							AND JIGYOSKB = '0'
+						</when>
+						<when test="mngTani == 2">
+							AND JIGYOSKB = '1'
+						</when>
+						<when test="mngTani == 3">
+							AND CNTJIGCD = #{cntrCd}
+						</when>
+					</choose>
+				GROUP BY 
+					CQSHINCD
+			) A,
+			(
+				SELECT
+					CQSHINCD,
+					SUM(ISNULL(SZAI_SU,0))   as SZAI_SU,
+					SUM(ISNULL(SZAI_GAK,0))  as SZAI_GAK
+				<include refid="fromSql"/>
+				WHERE 
+					KYM = #{startKymWk}
+					<choose>
+						<when test="mngTani == 1">
+							AND JIGYOSKB = '0'
+						</when>
+						<when test="mngTani == 2">
+							AND JIGYOSKB = '1'
+						</when>
+						<when test="mngTani == 3">
+							AND CNTJIGCD = #{cntrCd}
+						</when>
+					</choose>
+				GROUP BY 
+					CQSHINCD
+			) B,
+			(
+				SELECT
+					CQSHINCD,
+					SUM(ISNULL(MZAI_SU,0))   as MZAI_SU ,
+					SUM(ISNULL(MZAI_GAK,0))  as MZAI_GAK,
+					SUM(ISNULL(HZAI_SU,0))   as HZAI_SU ,
+					SUM(ISNULL(HZAI_GAK,0))  as HZAI_GAK,
+					Sum(ISNULL(SEKI_SU,0))   as SEKI_SU,
+					Sum(ISNULL(SEKI_GAK,0))  as SEKI_GAK
+				<include refid="fromSql"/>
+				WHERE 
+					KYM = #{endKymWk}
+					<choose>
+						<when test="mngTani == 1">
+							AND JIGYOSKB = '0'
+						</when>
+						<when test="mngTani == 2">
+							AND JIGYOSKB = '1'
+						</when>
+						<when test="mngTani == 3">
+							AND CNTJIGCD = #{cntrCd}
+						</when>
+					</choose>
+				GROUP BY 
+					CQSHINCD
+			) C
+		WHERE
+			A.CQSHINCD = B.CQSHINCD 
+			AND A.CQSHINCD = C.CQSHINCD
+		ORDER BY 
+			SHINCD
+	</select>
+</mapper>

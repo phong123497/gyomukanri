@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS020
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks020Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/07 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+
+<!-- 【農産企画支援】農産企画情報・商品検索マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks020Mapper">
+	<sql id="getNousanProjinShinJyoken">
+		WHERE
+			CQKIKANO = #{cqkikano}
+			<if test="'' != kyshincdStart and '' != kyshincdEnd">
+				AND KYSHINCD &gt;= #{kyshincdStart}
+				AND KYSHINCD &lt;= #{kyshincdEnd}
+			</if>
+			<if test="'' != kyshincdEnd and '' == kyshincdStart">
+				AND KYSHINCD = #{kyshincdEnd}
+			</if>
+			<if test="'' != kyshincdStart and '' == kyshincdEnd">
+				AND KYSHINCD = #{kyshincdStart}
+			</if>
+			AND DEL_FLG = 0 
+	</sql>
+	<!-- 入力された条件に合うデータをサーバーの農産企画商品マスタから検索し表示する。 -->
+	<select id="getNousanProjinShinByPnks020" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks020NousanProjinShin">
+		SELECT
+			CQKIKANO AS CQPROJNO
+			, KYSHINCD AS KYDKONYSHINCD
+			, SHINKJ AS SHINNM
+			, KIKAKKJ AS STDD
+			, EHU AS FCP
+			, SAGA AS SAG
+			, RARA AS LALA
+			, OITA AS OIT
+			, SUIKOSYA AS KMT
+			, MIYAZAKI AS MYZ
+			, KAGOSIMA AS KAG
+			, OKINAWA AS OKN 
+		FROM
+			[nosan].NSMN010
+		<include refid="getNousanProjinShinJyoken"></include>
+		ORDER BY
+			EHU DESC
+			, KYSHINCD ASC
+	</select>
+	<!-- 入力された条件に合うデータの件数を取得。 -->
+	<select id="getNousanProjinShinCntByPnks020" parameterType="Map" resultType="int">
+		SELECT
+			COUNT(CQKIKANO)
+		FROM
+			[nosan].NSMN010
+		<include refid="getNousanProjinShinJyoken"></include>
+	</select>
+</mapper>

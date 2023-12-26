@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS130
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks130Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// 01.00.00 | 2023/07/06 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】メーカーマスタ一覧マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks130Mapper">
+	<!-- メーカー一覧取得 -->
+	<select id="getMakerListByPnks130" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks130ListItem">
+		SELECT
+			MAKERCD AS 'makerCd'
+			, MAKERKJ AS 'makerNm'
+			, MAKERRKJ AS 'makerRyakusho'
+			, TELNO AS 'tel'
+			, FAXNO AS 'fax'
+			, NYUKHM AS 'delvTime'
+			, PASSWORD AS 'pass'
+			, SIRECD AS 'toriskCd'
+			, TORITEIFLG AS 'toriatStopFlag'
+			, TORITEIFLG AS 'toriatStop'
+			, DEL_FLG AS 'delTarget'
+			, FORMAT(KUSHN_NCHJ, 'yyyymmdd') AS 'updDatm'
+		FROM
+			[nosan].NSMM060
+		WHERE
+			DEL_FLG = '0'
+			<if test = "makerStart != null and makerStart != ''">
+				AND MAKERCD <![CDATA[ >= ]]> #{makerStart}
+			</if>
+			<if test = "makerEnd != null and makerEnd != ''">
+				AND MAKERCD <![CDATA[ <= ]]> #{makerEnd}
+			</if>
+		ORDER BY MAKERCD ASC
+	</select>
+	
+	<!-- メーカー情報更新排他制御 -->
+	<select id="getMakerUpdateTimeByPnks130" parameterType="Map" resultType="String">
+        SELECT
+            FORMAT(KUSHN_NCHJ, 'yyyymmdd') 
+        FROM
+            [nosan].NSMM060 
+        WHERE
+            MAKERCD = #{ makerCd }
+	</select>
+	
+	<!-- 入力された条件に合うデータの件数を取得。 -->
+	<select id="getInitialDataCntByPnks130" parameterType="Map" resultType="int">
+		SELECT
+			COUNT(MAKERCD)
+		FROM
+			[nosan].NSMM060
+	</select>
+	
+	<!-- メーカー情報取扱停止フラグ更新 -->
+	<update id="updateToriteiFlgByPnks130" parameterType="Map">
+        UPDATE [nosan].NSMM060 
+        SET
+            TORITEIFLG = #{ toriatStop }
+            , KUSHN_USR = #{ userId }
+            , KUSHN_PRGRM = #{ prgrm }
+            , KUSHN_NCHJ = #{ nchj } 
+        WHERE
+            MAKERCD = #{ makerCd }
+	</update>
+	
+	<!-- メーカー情報削除 -->
+	<delete id="deleteMakerByPnks130" parameterType="Map">
+        DELETE 
+        FROM
+            [nosan].NSMM060 
+        WHERE
+            MAKERCD IN <foreach item = "item" collection = "list"
+            open = "(" separator = "," close = ")">#{ item }</foreach >
+
+	</delete>
+</mapper>
+

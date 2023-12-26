@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PMSK051
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pmsk051
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/09/15 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+
+<mapper  namespace="coop.kyushu.gyomu_kanri.mapper.msk.Pmsk051Mapper">
+
+	<!-- 区分管理マスタ取得 -->
+	<select id="checkMeishoByPmsk051" parameterType="Map" resultType="Integer">
+    SELECT M1.ID AS ID
+    FROM [gyomu].MSTMEISM AS M1
+    <where>
+        <if test="reckb != null and reckb != ''">
+            AND (M1.K_RECKB IS NULL OR M1.K_RECKB = #{reckb})
+        </if>
+        <if test="meicd != null and meicd != ''">
+            AND (M1.K_MEICD IS NULL OR M1.K_MEICD = #{meicd})
+        </if>
+        AND M1.DELFLG != '1'
+    </where>
+</select>
+
+
+
+  <select id="checkTorihikisakiByPmsk051" parameterType="Map" resultType="String">
+		SELECT
+    	T1.DELFLG  AS DELFLG
+		FROM [gyomu].MSTTORIM AS T1
+		<where>
+				T1.TORICD IS NULL OR T1.TORICD = #{toricd}
+		</where>
+	</select>
+
+	<!-- 取引先マスタに情報を登録する。 -->
+	<insert id="insertByPmsk051" parameterType="Map">
+		INSERT 
+		INTO [gyomu].MSTTORIM (
+			 TORICD 
+			,TORIKJNM  
+			, TORIKNNM  
+			, TORIKJRM  
+			, TORIKNRM  
+			, YUBIN  
+			, YUBINNO  
+			, JUSYO1  
+			, JUSYO2  
+			, JUSYO3  
+			, TEL  
+			, TELNO  
+			, FAX  
+			, FAXNO  
+			, TORISTB  
+			, SIHASDAY 
+			, SIHAGESU 
+			, SIHADAY 
+			, SEKYSDAY 
+			, SEKYGESU 
+			, SEKYDAY 
+			, CENTFEE_RT 
+			, CENTFEE_RZ 
+			, CENTFEE_DR 
+			, EDI_DENHATKB 
+			, EDI_SSOSINKB 
+			, EDI_GLN 
+			, EDI_STRDATE 
+			, EDI_ENDDATE
+			, TEN_MEIKB  
+			, GENSIRKB
+			, WEBEDI_HATUKB  
+			, WEBEDI_HATUFMKB  
+			, WEBEDI_SOSNCD  
+			, WEBEDI_SYUKHFLG  
+			, SIRJKTKB  
+			, SEKKSSKB  
+			, ESOKKB  
+			, SKSIJIKB  
+			, SAIHATKB  
+			, TORITSKB  
+			, DELFLG  
+			, ADDYMD 
+			, UPDYMD 
+			, SKSI_USR 
+			, SKSI_PRGRM  
+			, SKSI_NCHJ 
+		) 
+		VALUES ( 
+			#{toricd}
+			, #{torikjnm}
+			, #{toriknnm}
+			, #{torikjrm}
+			, #{toriknrm}
+			, #{yubin}
+			, #{yubinno}
+			, #{jusyo1}
+			, #{jusyo2}
+			, #{jusyo3}
+			, #{tel}
+			, #{telno}
+			, #{fax}
+			, #{faxno}
+			, #{toristb}
+			, #{sihasday}
+			, #{sihagesu}
+			, #{sihaday}
+			, #{sekysday}
+			, #{sekygesu}
+			, #{sekyday}
+			, #{centfee_rt}
+			, #{centfee_rz}
+			, #{centfee_dr}
+			, #{edi_denhatkb}
+			, #{edi_ssosinkb}
+			, #{edi_gln}
+			, #{edi_strdate}
+			, #{edi_enddate}
+			, #{ten_meikb}
+			, #{gensirkb}
+			, #{webedi_hatukb}
+			, #{webedi_hatufmkb}
+			, #{webedi_sosncd}
+			, #{webedi_syukhflg}
+			, #{sirjktkb}
+			, #{sekksskb}
+			, #{esokkb}
+			, #{sksijikb}
+			, #{saihatkb}
+			, #{toritskb}
+			, '0'
+			, #{toroKoshin}
+			, #{toroKoshin}
+			, #{userId}
+			,'PMSK051'
+			,#{sakuj}
+		)
+	</insert>
+
+	<!--取引先マスタ更新  -->
+	<update  id="updateByPmsk051" parameterType="Map">
+		UPDATE
+		  [gyomu].MSTTORIM
+		SET
+			 TORIKNNM = #{toriknnm}  
+			, TORIKJRM = #{torikjrm}  
+			, TORIKNRM = #{toriknrm}  
+			, YUBIN = #{yubin}  
+			, YUBINNO = #{yubinno}  
+			, JUSYO1 = #{jusyo1}  
+			, JUSYO2 = #{jusyo2}  
+			, JUSYO3 = #{jusyo3}  
+			, TEL = #{tel}  
+			, TELNO = #{telno}  
+			, FAX = #{fax}  
+			, FAXNO = #{faxno}  
+			, TORISTB = #{toristb}  
+			, SIHASDAY = #{sihasday} 
+			, SIHAGESU = #{sihagesu} 
+			, SIHADAY = #{sihaday} 
+			, SEKYSDAY = #{sekysday} 
+			, SEKYGESU = #{sekygesu} 
+			, SEKYDAY = #{sekyday} 
+			, CENTFEE_RT = #{centfee_rt} 
+			, CENTFEE_RZ = #{centfee_rz} 
+			, CENTFEE_DR = #{centfee_dr} 
+			, EDI_DENHATKB = #{edi_denhatkb} 
+			, EDI_SSOSINKB = #{edi_ssosinkb} 
+			, EDI_GLN = #{edi_gln} 
+			, EDI_STRDATE = #{edi_strdate} 
+			, EDI_ENDDATE = #{edi_enddate}
+			, TEN_MEIKB = #{ten_meikb}  
+			, GENSIRKB = #{gensirkb}
+			, WEBEDI_HATUKB = #{webedi_hatukb}  
+			, WEBEDI_HATUFMKB = #{webedi_hatufmkb}  
+			, WEBEDI_SOSNCD = #{webedi_sosncd}  
+			, WEBEDI_SYUKHFLG = #{webedi_syukhflg}  
+			, SIRJKTKB = #{sirjktkb}  
+			, SEKKSSKB = #{sekksskb}  
+			, ESOKKB = #{esokkb}  
+			, SKSIJIKB = #{sksijikb}  
+			, SAIHATKB = #{saihatkb}  
+			, TORITSKB = #{toritskb}  
+			, DELFLG= '0'
+			, ADDYMD = #{toroKoshin} 
+			, SKSI_USR = #{userId} 
+			, SKSI_PRGRM = 'PMSK051'  
+			, SKSI_NCHJ = #{sakuj} 
+    WHERE
+      TORICD = #{toricd}
+     
+	</update>
+
+	<!-- 取引先マスタ追加（更新） -->
+	<update  id="reinsertByPmsk051" parameterType="Map">
+		UPDATE
+		  [gyomu].MSTTORIM
+		SET
+			 TORIKNNM = #{toriknnm}  
+			, TORIKJRM = #{torikjrm}  
+			, TORIKNRM = #{toriknrm}  
+			, YUBIN = #{yubin}  
+			, YUBINNO = #{yubinno}  
+			, JUSYO1 = #{jusyo1}  
+			, JUSYO2 = #{jusyo2}  
+			, JUSYO3 = #{jusyo3}  
+			, TEL = #{tel}  
+			, TELNO = #{telno}  
+			, FAX = #{fax}  
+			, FAXNO = #{faxno}  
+			, TORISTB = #{toristb}  
+			, SIHASDAY = #{sihasday} 
+			, SIHAGESU = #{sihagesu} 
+			, SIHADAY = #{sihaday} 
+			, SEKYSDAY = #{sekysday} 
+			, SEKYGESU = #{sekygesu} 
+			, SEKYDAY = #{sekyday} 
+			, CENTFEE_RT = #{centfee_rt} 
+			, CENTFEE_RZ = #{centfee_rz} 
+			, CENTFEE_DR = #{centfee_dr} 
+			, EDI_DENHATKB = #{edi_denhatkb} 
+			, EDI_SSOSINKB = #{edi_ssosinkb} 
+			, EDI_GLN = #{edi_gln} 
+			, EDI_STRDATE = #{edi_strdate} 
+			, EDI_ENDDATE = #{edi_enddate}
+			, TEN_MEIKB = #{ten_meikb}  
+			, GENSIRKB = #{gensirkb}
+			, WEBEDI_HATUKB = #{webedi_hatukb}  
+			, WEBEDI_HATUFMKB = #{webedi_hatufmkb}  
+			, WEBEDI_SOSNCD = #{webedi_sosncd}  
+			, WEBEDI_SYUKHFLG = #{webedi_syukhflg}  
+			, SIRJKTKB = #{sirjktkb}  
+			, SEKKSSKB = #{sekksskb}  
+			, ESOKKB = #{esokkb}  
+			, SKSIJIKB = #{sksijikb}  
+			, SAIHATKB = #{saihatkb}  
+			, TORITSKB = #{toritskb}  
+			, DELFLG= '0'
+			, ADDYMD = #{toroKoshin} 
+			, UPDYMD = #{toroKoshin}
+			, SKSI_USR = #{userId} 
+			, SKSI_PRGRM = 'PMSK051'  
+			, SKSI_NCHJ = #{sakuj} 
+    WHERE
+      TORICD = #{toricd}
+	</update>
+  
+</mapper>
+

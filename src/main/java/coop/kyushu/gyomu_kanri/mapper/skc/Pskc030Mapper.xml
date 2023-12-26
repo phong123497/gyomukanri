@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PSKC030
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pskc030Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/11 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【惣菜加工センター】製造計画数入力マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.skc.Pskc030Mapper">
+	<!-- 初期処理でプルダウン店リストを取得する。 -->
+	<select id="getMiseListByPskc030" resultType="coop.kyushu.gyomu_kanri.entity.com.Szvw102Entity">
+		SELECT
+			MISECD
+			, MISECD + '：' + MISENM AS MISENM
+		FROM
+			[sozai].SZVW102
+		ORDER BY
+			MISECD
+	</select>
+	<!-- 初期処理でプルダウン納品日リストを取得する。 -->
+	<select id="getNhinymdListByPskc030" resultType="coop.kyushu.gyomu_kanri.entity.com.Sztr102Entity">
+		SELECT DISTINCT
+			NHINYMD
+			, CONVERT(varchar, CONVERT(date, NHINYMD, 112), 111) + '～' + CONVERT( 
+				varchar
+				, DATEADD(day, 6, CONVERT(date, NHINYMD, 112))
+				, 111
+			) AS nhinnm
+		FROM
+			[sozai].SZTR102 
+		WHERE
+			DATEPART(weekday, CONVERT(date, NHINYMD, 112)) = 2 
+		ORDER BY
+			NHINYMD DESC
+	</select>
+	<!-- 店舗、表示週、表示順と昇順降順より、対象の製造計画数情報を取得する。 -->
+	<select id="getSosaiTaishoTenpoByPskc030" resultType="coop.kyushu.gyomu_kanri.entity.skc.Rskc03001ListItem">
+		WITH CQDWH1200VW1 AS (
+			SELECT 
+				TRIM(#{tenpo} ) AS TENPO,
+				TRIM(#{hyojiWeek} ) AS HYOJIWEEK
+		   FROM (SELECT 1 AS dummy) AS DUMMY
+		),
+		CQDWH1200VW2 AS (
+			SELECT TENPO,
+				HYOJIWEEK,
+				CONVERT(VARCHAR(8), DATEADD(DAY, 1, CONVERT(DATE, HYOJIWEEK, 112)), 112) AS HYOJIWEEK2,
+				CONVERT(VARCHAR(8), DATEADD(DAY, 2, CONVERT(DATE, HYOJIWEEK, 112)), 112) AS HYOJIWEEK3,
+				CONVERT(VARCHAR(8), DATEADD(DAY, 3, CONVERT(DATE, HYOJIWEEK, 112)), 112) AS HYOJIWEEK4,
+				CONVERT(VARCHAR(8), DATEADD(DAY, 4, CONVERT(DATE, HYOJIWEEK, 112)), 112) AS HYOJIWEEK5,
+				CONVERT(VARCHAR(8), DATEADD(DAY, 5, CONVERT(DATE, HYOJIWEEK, 112)), 112) AS HYOJIWEEK6,
+				CONVERT(VARCHAR(8), DATEADD(DAY, 6, CONVERT(DATE, HYOJIWEEK, 112)), 112) AS HYOJIWEEK7
+    		FROM CQDWH1200VW1
+		)
+		SELECT A.TENPO,
+			A.CQSHINCD AS SHIN,
+			A.SHINKJ,
+			MAX(A.SHINKJ) AS SHINNM,
+			MAX(A.KIKAKN) AS STDD,
+			MAX(A.HYOJIWEEK) AS DELVDAYMON,
+			SUM(CASE WHEN A.HYOJIWEEK = B.NHINYMD THEN B.PLANSU ELSE NULL END) AS PLANSUMON,
+			SUM(CASE WHEN A.HYOJIWEEK = B.NHINYMD THEN B.NHINSU ELSE NULL END) AS DELVSUMON,
+			MAX(A.HYOJIWEEK2) AS DELVDAYTUE,
+			SUM(CASE WHEN A.HYOJIWEEK2 = B.NHINYMD THEN B.PLANSU ELSE NULL END) AS PLANSUTUE,
+			SUM(CASE WHEN A.HYOJIWEEK2 = B.NHINYMD THEN B.NHINSU ELSE NULL END) AS DELVSUTUE,
+			MAX(A.HYOJIWEEK3) AS DELVDAYWED,
+			SUM(CASE WHEN A.HYOJIWEEK3 = B.NHINYMD THEN B.PLANSU ELSE NULL END) AS PLANSUWED,
+			SUM(CASE WHEN A.HYOJIWEEK3 = B.NHINYMD THEN B.NHINSU ELSE NULL END) AS DELVSUWED,
+			MAX(A.HYOJIWEEK4) AS DELVDAYTHU,
+			SUM(CASE WHEN A.HYOJIWEEK4 = B.NHINYMD THEN B.PLANSU ELSE NULL END) AS PLANSUTHU,
+			SUM(CASE WHEN A.HYOJIWEEK4 = B.NHINYMD THEN B.NHINSU ELSE NULL END) AS DELVSUTHU,
+			MAX(A.HYOJIWEEK5) AS DELVDAYFRI,
+			SUM(CASE WHEN A.HYOJIWEEK5 = B.NHINYMD THEN B.PLANSU ELSE NULL END) AS PLANSUFRI,
+			SUM(CASE WHEN A.HYOJIWEEK5 = B.NHINYMD THEN B.NHINSU ELSE NULL END) AS DELVSUFRI,
+			MAX(A.HYOJIWEEK6) AS DELVDAYSAT,
+			SUM(CASE WHEN A.HYOJIWEEK6 = B.NHINYMD THEN B.PLANSU ELSE NULL END) AS PLANSUSAT,
+			SUM(CASE WHEN A.HYOJIWEEK6 = B.NHINYMD THEN B.NHINSU ELSE NULL END) AS DELVSUSAT,
+			MAX(A.HYOJIWEEK7) AS DELVDAYSUN,
+			SUM(CASE WHEN A.HYOJIWEEK7 = B.NHINYMD THEN B.PLANSU ELSE NULL END) AS PLANSUSUN,
+			SUM(CASE WHEN A.HYOJIWEEK7 = B.NHINYMD THEN B.NHINSU ELSE NULL END) AS DELVSUSUN
+		FROM (
+			SELECT DISTINCT
+				A.CQSHINCD,
+				C.SHINKJ,
+				C.KIKAKN,
+				B.TENPO,
+				B.HYOJIWEEK,
+				B.HYOJIWEEK2,
+				B.HYOJIWEEK3,
+				B.HYOJIWEEK4,
+				B.HYOJIWEEK5,
+				B.HYOJIWEEK6,
+				B.HYOJIWEEK7
+			FROM [sozai].SZTR102 A
+				INNER JOIN CQDWH1200VW2 B ON A.NHINYMD BETWEEN B.HYOJIWEEK AND B.HYOJIWEEK7
+				INNER JOIN [sozai].SZVW103 C ON A.CQSHINCD = C.CQSHINCD
+			WHERE A.USEFLG = '1'
+		) A
+		LEFT JOIN [sozai].SZTR101 B 
+			ON B.MISECD = A.TENPO 
+			AND B.CQSHINCD = A.CQSHINCD 
+			AND B.NHINYMD BETWEEN A.HYOJIWEEK AND A.HYOJIWEEK7 
+		GROUP BY
+			A.TENPO
+			, A.CQSHINCD
+			, A.SHINKJ
+		ORDER BY
+			<if test="hyojiRank == 0 and ascDesc == 0">
+				A.CQSHINCD ASC
+			</if>
+			<if test="hyojiRank == 0 and ascDesc == 1">
+				A.CQSHINCD DESC
+			</if>
+			<if test="hyojiRank == 1 and ascDesc == 0">
+				A.SHINKJ ASC
+			</if>
+			<if test="hyojiRank == 1 and ascDesc == 1">
+				A.SHINKJ DESC
+			</if>
+	</select>
+	<!-- 店コード、納品日、CQ商品コード、計画数、納品数とユーザーIDより、製造計画数情報を更新、または登録する。 -->
+	<update id="insertUpdateSousaiSeizouKeikakuDataByPskc030" parameterType="Map">
+		MERGE [sozai].SZTR101 AS A 
+			USING ( 
+				SELECT
+					#{tenpo} AS MISECD
+					, #{cqshincd} AS CQSHINCD
+					, #{nhinymd} AS NHINYMD
+					, #{plansu} AS PLANSU
+					, #{nhinsu} AS NHINSU
+					, C.KSEICD
+					, C.TSBCD
+					, #{usrid} AS USRID 
+				FROM
+					[sozai].SZVW102 C 
+				WHERE
+					C.MISECD = #{tenpo}
+			) AS B 
+				ON ( 
+					A.MISECD = B.MISECD
+					AND A.CQSHINCD = B.CQSHINCD
+					AND A.NHINYMD = B.NHINYMD
+				) 
+		WHEN MATCHED THEN UPDATE 
+		SET
+			A.PLANSU = B.PLANSU
+			, A.NHINSU = B.NHINSU
+			, A.KUSHN_NCHJ = #{nchj}
+			, A.KUSHN_USR = B.USRID 
+		WHEN NOT MATCHED THEN 
+		INSERT ( 
+			MISECD
+			, NHINYMD
+			, CQSHINCD
+			, KSEICD
+			, TSBCD
+			, PLANSU
+			, NHINSU
+			, DATAKBN
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		) 
+		VALUES ( 
+			B.MISECD
+			, B.NHINYMD
+			, B.CQSHINCD
+			, B.KSEICD
+			, B.TSBCD
+			, B.PLANSU
+			, B.NHINSU
+			, '2'
+			, B.USRID
+			, 'PSKC030'
+			, #{nchj}
+			, B.USRID
+			, 'PSKC030'
+			, #{nchj}
+		);
+	</update>
+	<!-- 製造計画データ削除する。 -->
+	<delete id="deleteSousaiSeizouKeikakuDataByPskc030" parameterType="Map">
+		DELETE 
+		FROM
+			[sozai].SZTR101 
+		WHERE
+			MISECD = #{tenpo}
+			AND NHINYMD BETWEEN #{nhinymdFrom} AND #{nhinymdTo}
+			AND PLANSU IS NULL 
+			AND NHINSU IS NULL
+	</delete>
+	<!-- 対象店舗登録する。 -->
+	<insert id="insertSosaiTaishoTenpoByPskc030" parameterType="Map">
+		INSERT INTO [sozai].SZTR103( 
+			MISECD
+			, KSEICD
+			, TSBCD
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+			, USEFLG
+			) 
+			SELECT DISTINCT
+				A.MISECD
+				, B.KSEICD
+				, B.TSBCD
+				, #{usrid}
+				, 'PSKC030'
+				, #{nchj}
+				, #{usrid}
+				, 'PSKC030'
+				, #{nchj}
+				, '1' 
+			FROM
+				[sozai].SZTR101 A 
+				INNER JOIN [sozai].SZVW102 B 
+					ON B.MISECD = A.MISECD 
+			WHERE
+				A.MISECD = #{tenpo}
+				AND A.NHINYMD BETWEEN #{nhinymdFrom} AND #{nhinymdTo}
+				AND NOT EXISTS ( 
+					SELECT
+						1 
+					FROM
+						[sozai].SZTR103 C 
+					WHERE
+						C.MISECD = A.MISECD
+				);
+	</insert>
+</mapper>

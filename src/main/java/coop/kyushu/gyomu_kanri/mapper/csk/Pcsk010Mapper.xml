@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PCSK010
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pcsk010Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/22 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【コープ九州商管】CSV取込マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.csk.Pcsk010Mapper">
+	<!-- 排他制御テーブルから使用中フラグを検索する。 -->
+	<select id="selectControlStatusByPcsk010" parameterType="String" resultType="String">
+		SELECT
+		    使用中フラグ 
+		FROM
+		    [shokan].排他制御テーブル 
+		WHERE
+		    マスタ識別ＩＤ = #{masterIdentId}
+		    AND 使用中フラグ = '0' 
+	</select>
+	<!-- 排他制御テーブルから使用状態を更新する。-->
+	<update id="updateControlStatusByPskc010" parameterType="Map">
+		UPDATE 
+			[shokan].排他制御テーブル 
+		SET
+		    使用中フラグ = #{status}
+		WHERE
+		    マスタ識別ＩＤ = #{masterIdentId}
+	</update>
+	<!-- ワークテーブルのデータをクリアする。-->
+	<delete id="deleteWorkTableByPskc010" parameterType="Map">
+		DELETE 
+		FROM
+		    [shokan].${masterIdentId}
+	</delete>
+	<!-- 振替調整データワークにデータを登録する。-->
+	<insert id="insertSKWK0001ByPskc010" parameterType="Map">
+		INSERT 
+		INTO [shokan].SKWK0001( 
+			SEQNO
+			, DENNO
+			, GYONO
+			, DENDATE
+			, SCENTCD
+			, NCENTCD
+			, CQSHINCD
+			, SURYO
+			, KINGAKU
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		) 
+		VALUES ( 
+			#{SEQNO}
+			, #{DENNO}
+			, #{GYONO}
+			, #{DENDATE}
+			, #{SCENTCD}
+			, #{NCENTCD}
+			, #{CQSHINCD}
+			, #{SURYO}
+			, #{KINGAKU}
+			, #{SKSI_USR}
+			, #{SKSI_PRGRM}
+			, #{SKSI_NCHJ}
+			, #{SKSI_USR}
+			, #{SKSI_PRGRM}
+			, #{SKSI_NCHJ}
+		)
+	</insert>
+	<!-- 廃棄調整データワークにデータを登録する。-->
+	<insert id="insertSKWK0002ByPskc010" parameterType="Map">
+		INSERT 
+		INTO [shokan].SKWK0002( 
+			SEQNO
+			, DENNO
+			, GYONO
+			, DENDATE
+			, CENTCD
+			, CQSHINCD
+			, SURYO
+			, KINGAKU
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		) 
+		VALUES ( 
+			#{SEQNO}
+			, #{DENNO}
+			, #{GYONO}
+			, #{DENDATE}
+			, #{SCENTCD}
+			, #{CQSHINCD}
+			, #{SURYO}
+			, #{KINGAKU}
+			, #{SKSI_USR}
+			, #{SKSI_PRGRM}
+			, #{SKSI_NCHJ}
+			, #{SKSI_USR}
+			, #{SKSI_PRGRM}
+			, #{SKSI_NCHJ}
+		)
+	</insert>
+	<!-- 在庫調整ワークにデータを登録する。-->
+	<insert id="insertSKWK0003ByPskc010" parameterType="Map">
+		INSERT 
+		INTO [shokan].SKWK0003( 
+			SEQNO
+			, DENNO
+			, GYONO
+			, KYM
+			, CENTCD
+			, JIGYOSKB
+			, DAIBUNCD
+			, CQSHINCD
+			, SIRE_TANK
+			, HZAI_SU
+			, HZAI_GAK
+			, SEKI_SU
+			, SEKI_GAK
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		) 
+		VALUES ( 
+			#{SEQNO}
+			, #{DENNO}
+			, #{GYONO}
+			, #{KYM}
+			, #{SCENTCD}
+			, #{JIGYOSKB}
+			, #{DAIBUNCD}
+			, #{CQSHINCD}
+			, #{SIRE_TANK}
+			, #{HZAI_SU}
+			, #{HZAI_GAK}
+			, #{SEKI_SU}
+			, #{SEKI_GAK}
+			, #{SKSI_USR}
+			, #{SKSI_PRGRM}
+			, #{SKSI_NCHJ}
+			, #{SKSI_USR}
+			, #{SKSI_PRGRM}
+			, #{SKSI_NCHJ}
+		)
+	</insert>
+	<!-- 諸伝票データCOREワークにデータを登録する。-->
+	<insert id="insertSKWK0004ByPskc010" parameterType="Map">
+		INSERT 
+		INTO [shokan].SKWK0004( 
+			SEQNO
+			, ARABUNCD
+			, DENDATE
+			, DENNO
+			, GYONO
+			, KRKMKCD
+			, KRHKMCD
+			, KRBMNCD
+			, KRTORIKB
+			, KRTORICD
+			, KRKNCD1
+			, KRKNCD2
+			, KRKNCD3
+			, KRKNCD4
+			, KRZEICD
+			, KRZEINKB
+			, KRSIWGKN
+			, KRZEIGK
+			, KRSIWGKK
+			, KRTEKIY1
+			, KRTEKIY2
+			, KSKMKCD
+			, KSHKMCD
+			, KSBMNCD
+			, KSTORIKB
+			, KSTORICD
+			, KSKNCD1
+			, KSKNCD2
+			, KSKNCD3
+			, KSKNCD4
+			, KSZEICD
+			, KSZEINKB
+			, KSSIWGKN
+			, KSZEIGK
+			, KSSIWGKK
+			, KSTEKIY1
+			, KSTEKIY2
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		) 
+		VALUES ( 
+			#{SEQNO}
+			,  #{ARABUNCD}
+			,  #{DENDATE}
+			,  #{DENNO}
+			,  #{GYONO}
+			,  #{KRKMKCD}
+			,  #{KRHKMCD}
+			,  #{KRBMNCD}
+			,  #{KRTORIKB}
+			,  #{KRTORICD}
+			,  #{KRKNCD1}
+			,  #{KRKNCD2}
+			,  #{KRKNCD3}
+			,  #{KRKNCD4}
+			,  #{KRZEICD}
+			,  #{KRZEINKB}
+			,  #{KRSIWGKN}
+			,  #{KRZEIGK}
+			,  #{KRSIWGKK}
+			,  #{KRTEKIY1}
+			,  #{KRTEKIY2}
+			,  #{KSKMKCD}
+			,  #{KSHKMCD}
+			,  #{KSBMNCD}
+			,  #{KSTORIKB}
+			,  #{KSTORICD}
+			,  #{KSKNCD1}
+			,  #{KSKNCD2}
+			,  #{KSKNCD3}
+			,  #{KSKNCD4}
+			,  #{KSZEICD}
+			,  #{KSZEINKB}
+			,  #{KSSIWGKN}
+			,  #{KSZEIGK}
+			,  #{KSSIWGKK}
+			,  #{KSTEKIY1}
+			,  #{KSTEKIY2}
+			,  #{SKSI_USR}
+			,  #{SKSI_PRGRM}
+			,  #{SKSI_NCHJ}
+			,  #{SKSI_USR}
+			,  #{SKSI_PRGRM}
+			,  #{SKSI_NCHJ}
+			)
+	</insert>
+	<!-- 諸伝票データAPワークにデータを登録する。-->
+	<insert id="insertSKWK0005ByPskc010" parameterType="Map">
+		INSERT 
+		INTO [shokan].SKWK0005( 
+			SEQNO
+			, ARABUNCD
+			, DENDATE
+			, DENKB
+			, DENNO
+			, GYONO
+			, TSHNTKB
+			, KRKMKCD
+			, KRHKMCD
+			, KRBMNCD
+			, KRTORIKB
+			, KRTORICD
+			, KRKNCD1
+			, KRKNCD2
+			, KRKNCD3
+			, KRKNCD4
+			, KRZEICD
+			, KRZEINKB
+			, KRSIWGKN
+			, KRZEIGK
+			, KRSIWGKK
+			, KRTEKIY
+			, KSKMKCD
+			, KSHKMCD
+			, KSBMNCD
+			, KSTORIKB
+			, KSTORICD
+			, KSKNCD1
+			, KSKNCD2
+			, KSKNCD3
+			, KSKNCD4
+			, KSZEICD
+			, KSZEINKB
+			, KSSIWGKN
+			, KSZEIGK
+			, KSSIWGKK
+			, KSTEKIY
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		) 
+		VALUES ( 
+			#{SEQNO}
+			,  #{ARABUNCD}
+			,  #{DENDATE}
+			,  #{DENKB}
+			,  #{DENNO}
+			,  #{GYONO}
+			,  #{TSHNTKB}
+			,  #{KRKMKCD}
+			,  #{KRHKMCD}
+			,  #{KRBMNCD}
+			,  #{KRTORIKB}
+			,  #{KRTORICD}
+			,  #{KRKNCD1}
+			,  #{KRKNCD2}
+			,  #{KRKNCD3}
+			,  #{KRKNCD4}
+			,  #{KRZEICD}
+			,  #{KRZEINKB}
+			,  #{KRSIWGKN}
+			,  #{KRZEIGK}
+			,  #{KRSIWGKK}
+			,  #{KRTEKIY}
+			,  #{KSKMKCD}
+			,  #{KSHKMCD}
+			,  #{KSBMNCD}
+			,  #{KSTORIKB}
+			,  #{KSTORICD}
+			,  #{KSKNCD1}
+			,  #{KSKNCD2}
+			,  #{KSKNCD3}
+			,  #{KSKNCD4}
+			,  #{KSZEICD}
+			,  #{KSZEINKB}
+			,  #{KSSIWGKN}
+			,  #{KSZEIGK}
+			,  #{KSSIWGKK}
+			,  #{KSTEKIY}
+			,  #{SKSI_USR}
+			,  #{SKSI_PRGRM}
+			,  #{SKSI_NCHJ}
+			,  #{SKSI_USR}
+			,  #{SKSI_PRGRM}
+			,  #{SKSI_NCHJ}
+			)
+	</insert>
+	<!-- 予算データワークにデータを登録する。-->
+	<insert id="insertSKWK0008ByPskc010" parameterType="Map">
+		INSERT 
+		INTO [shokan].SKWK0008( 
+			SEQNO
+			, KYM
+			, KAIKEBMN
+			, DAIBNCD
+			, YOSAN
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		) 
+		VALUES ( 
+			#{SEQNO}
+			,  #{KYM}
+			,  #{KAIKEBMN}
+			,  #{DAIBNCD}
+			,  #{YOSAN}
+			,  #{SKSI_USR}
+			,  #{SKSI_PRGRM}
+			,  #{SKSI_NCHJ}
+			,  #{SKSI_USR}
+			,  #{SKSI_PRGRM}
+			,  #{SKSI_NCHJ}
+		)
+	</insert>
+	<!-- 振替調整ワークテーブルのデータをテーブルに登録する。 -->
+	<update id="createSKWK0001ByPskc010" parameterType="java.util.Map" statementType="CALLABLE">
+		{
+			CALL [shokan].SKWP0001(#{inUSERID,mode=IN},#{outSTATUS,mode=OUT, jdbcType=VARCHAR},#{outMSG,mode=OUT, jdbcType=VARCHAR})
+		}
+	</update>
+	<!-- 廃棄調整ワークテーブルのデータをテーブルに登録する。 -->
+	<update id="createSKWK0002ByPskc010" parameterType="java.util.Map" statementType="CALLABLE">
+		{
+			CALL [shokan].SKWP0002(#{inUSERID,mode=IN},#{outSTATUS,mode=OUT, jdbcType=VARCHAR},#{outMSG,mode=OUT, jdbcType=VARCHAR})
+		}
+	</update>
+	<!-- 在庫調整ワークテーブルのデータをテーブルに登録する。 -->
+	<update id="createSKWK0003ByPskc010" parameterType="java.util.Map" statementType="CALLABLE">
+		{
+			CALL [shokan].SKWP0003(#{inUSERID,mode=IN},#{outSTATUS,mode=OUT, jdbcType=VARCHAR},#{outMSG,mode=OUT, jdbcType=VARCHAR})
+		}
+	</update>
+	<!-- 諸伝票データCOREワークテーブルのデータをテーブルに登録する。 -->
+	<update id="createSKWK0004ByPskc010" parameterType="java.util.Map" statementType="CALLABLE">
+		{
+			CALL [shokan].SKWP0004(#{inUSERID,mode=IN},#{outSTATUS,mode=OUT, jdbcType=VARCHAR},#{outMSG,mode=OUT, jdbcType=VARCHAR})
+		}
+	</update>
+	<!-- 諸伝票データAPワークテーブルのデータをテーブルに登録する。 -->
+	<update id="createSKWK0005ByPskc010" parameterType="java.util.Map" statementType="CALLABLE">
+		{
+			CALL [shokan].SKWP0005(#{inUSERID,mode=IN},#{outSTATUS,mode=OUT, jdbcType=VARCHAR},#{outMSG,mode=OUT, jdbcType=VARCHAR})
+		}
+	</update>
+	<!-- 予算ワークテーブルのデータをテーブルに登録する。 -->
+	<update id="createSKWK0008ByPskc010" parameterType="java.util.Map" statementType="CALLABLE">
+		{
+			CALL [shokan].SKWP0008(#{inUSERID,mode=IN},#{outSTATUS,mode=OUT, jdbcType=VARCHAR},#{outMSG,mode=OUT, jdbcType=VARCHAR})
+		}
+	</update>
+</mapper>

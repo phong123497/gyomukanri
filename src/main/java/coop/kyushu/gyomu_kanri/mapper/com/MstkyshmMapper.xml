@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: 共通
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: MstkyshmMapper
+//
+// <<Modification History>>
+// Version  | Date	   | Updated By		   | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/09/12 | ＡＭＣ			   | 新規作成
+//================================================================================
+-->
+
+<!-- 共同購入商品マスタ マッパークラス -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.com.MstkyshmMapper">
+
+	<!-- 共同購入商品リスト情報取得 -->
+	<select id="getKyshmList" parameterType="Map" 
+		resultType="coop.kyushu.gyomu_kanri.entity.com.MstkyshmEntity">
+ 		SELECT
+		    KYSHINCD
+		    , CQSHINCD
+		    , SHINKN
+		    , SHINKJ
+		    , SHINRKJ
+		    , KIKAKKN
+		    , BRKB
+		    , NBMKKB
+		    , NSKCD
+		    , ITFCD
+		    , JANCD1
+		    , JANCD2
+		    , DAIBNCD
+		    , TYUBNCD
+		    , SYOBNCD
+		    , HINBNCD
+		    , SYOTNCD
+		    , NSKSYOCD
+		    , DOKIKAKB
+		    , KIKAKB
+		    , TEKIYMD1
+		    , ZEIKB1
+		    , ZEIRITU1
+		    , GENTAN1
+		    , BAITAN1
+		    , KUMITAN1
+		    , ZENUKUMI1
+		    , TEKIYMD2
+		    , ZEIKB2
+		    , ZEIRITU2
+		    , GENTAN2
+		    , BAITAN2
+		    , KUMITAN2
+		    , ZENUKUMI2
+		    , SANKAKAK
+		    , OKIUNTN
+		    , OKIRUTO
+		    , CQGPR
+		    , SHINRUTO
+		    , QRCTUKKB
+		    , SYUHINKB
+		    , TYOKUSKB
+		    , TEKYOKB
+		    , TAKHAIKB
+		    , THKAISKB
+		    , THSORYKB
+		    , DENPYOKB
+		    , EHU
+		    , SAGA
+		    , RARA
+		    , OITA
+		    , SUIKOSYA
+		    , MIYAZAKI
+		    , KAGOSIMA
+		    , OKINAWA
+		    , TENPO
+		    , SIRECD
+		    , HATUCD
+		    , TORIYMD
+		    , KEKAKSU
+		    , KAKHOSU
+		    , JYOGNSU
+		    , HENPHKKB
+		    , HATUHKKB
+		    , HATUPATN
+		    , HATUKB
+		    , CSKB
+		    , CSIRISU
+		    , BLIRISU
+		    , LDTIME
+		    , NYUIRISU
+		    , KYOTANSU
+		    , AREAKB
+		    , YOJOKB
+		    , CSDAKB
+		    , ORICONKB
+		    , HAKIRISU
+		    , YOSKRITU
+		    , TOREKB
+		    , TORIRISU
+		    , SHINTOKU
+		    , RUIJHNCD
+		    , NANIDO
+		    , PAHARISU
+		    , PADANSU
+		    , [ZONE]
+		    , ADDRESS
+		    , DAN
+		    , RETU
+		    , JSEIKB
+		    , JSEINISU
+		    , SHINKTKB
+		    , NSKKATAB
+		    , KATAKB
+		    , BEKATAKB
+		    , KYOKYUPA
+		    , ZKAMSGKB
+		    , YUKIKN_F
+		    , YUKIKN_T
+		    , SEIKOKCD
+		    , SPAKFLG
+		    , HIKANRKB
+		    , NYUGNISU
+		    , SYUGNISU
+		    , SYOKNISU
+		    , SEZOGYMD
+		    , TATE
+		    , YOKO
+		    , TAKASA
+		    , JYURYO
+		    , YOURYO
+		    , LASTKIKA
+		    , TSIKIKB
+		    , UPDKB
+		    , SOHUKB
+		    , PICKTANI
+		    , KEISUKB
+		    , SOUKOCD
+		    , CKEISAIKB
+		    , HENKIKNO
+		    , EXP_SOUKOCD
+		    , EXP_SYOHINCD
+		    , EXP_KIKAKUNO
+		    , JANSBT
+		    , KAGPLTKB
+		    , YSYOBIKB
+		    , NYUKHIKB
+		    , BUMONCD
+		    , HAITATSRYO
+		    , BAITAINO
+		    , KYKEJYOKB
+		    , WRMODSKB
+		    , KIWRMODSKB
+		    , JIGYOKB
+		    , SYUZEKB
+		    , SYUZEYORYO
+		    , YORYOTANI
+		    , UPDSYSKB
+		    , DELFLG
+		    , ADDYMD
+		    , UPDYMD
+		    , UPDKOMOK
+		    , SKSI_USR
+		    , SKSI_PRGRM
+		    , FORMAT(SKSI_NCHJ, 'yyyy/MM/dd HH:mm:ss.fff') AS SKSI_NCHJ
+		    , KUSHN_USR
+		    , KUSHN_PRGRM
+		    , FORMAT(KUSHN_NCHJ, 'yyyy/MM/dd HH:mm:ss.fff') AS KUSHN_NCHJ
+		    , ID 
+		FROM
+		    [gyomu].MSTKYSHM
+		<where>
+			<if test="delFlg == '0'">
+				AND DEL_FLG <![CDATA[ <> ]]>  '1'
+			</if>
+			<if test="delFlg == '1'">
+				AND DEL_FLG = '1'
+			</if>
+			<if test="kyshincd != null and kyshincd !=''">
+				AND KYSHINCD = #{kyshincd}
+			</if>
+		</where>
+		ORDER BY KYSHINCD ASC
+	</select>
+</mapper>

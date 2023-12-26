@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: Pnks070
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks070Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/25 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】価格取込用データ出力マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks070Mapper">
+	<!-- 農産企画商品禁則価格チェック。 -->
+	<select id="getNousanProjInfShinByPnks070" parameterType="Map" resultType="int">
+		SELECT
+			COUNT(CQSHINCD)
+		FROM
+			[nosan].NSMN010 M1
+		<where>
+			<include refid="sqlWhere"></include>
+			AND  M1.DEL_FLG = 0 
+			AND ERR_CD = '12'
+		</where>
+	</select>
+	<!-- 価格取込用データ取得。 -->
+	<select id="getNousanProjInfShinDataByPnks070" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks070NousanProjInfShinList">
+		SELECT
+			M1.SEICD     AS 'kaiinHojinCd'
+			,M1.CQKIKANO AS 'cqProjNo'
+			,M1.KYSHINCD AS 'kydKonyShinCd'
+			,M1.CQSHINCD AS 'cpkyushuShinCd'
+			,M1.JANCD    AS 'janCd1Gen'
+			,M1.BNCD     AS 'cqCatgCd'
+			,M1.SHINKJ   AS 'hyojiShinNm'
+			,M1.KIKAKKJ  AS 'hyojiStdd'
+			,M1.KIKAKB   AS 'kakakuHyojiShubt'
+			,M1.GENTAN   AS 'konkaiGentan'
+			,M1.BAITAN   AS 'konkaiUritan'　
+			,M1.ZENUKUMI AS 'konkaiHontaiKakakui'
+			,M1.KUMITAN  AS 'konkaiKumikaZeikomi'
+			,M1.KEIKAKSU AS 'planSu'
+			,M1.BRKB     AS 'brandKbn'
+		FROM
+			[nosan].NSVW170 M1
+		<where>
+			<include refid="sqlWhere"></include>
+		</where>
+		ORDER BY
+			 M1.SEICD 
+			,  M1.CQKIKANO 
+			,  M1.KYSHINCD 
+	</select>
+	<sql id="sqlWhere">
+		<if test="'' != projNoStart and '' != projNoEnd">
+			AND M1.CQKIKANO &gt;= #{projNoStart}
+			AND M1.CQKIKANO &lt;= #{projNoEnd}
+		</if>
+		<if test="'' != projNoStart and '' == projNoEnd">
+			AND M1.CQKIKANO = #{projNoStart}
+		</if>
+		<if test="'' == projNoStart and '' != projNoEnd">
+			AND M1.CQKIKANO = #{projNoEnd}
+		</if>
+	</sql>
+</mapper>

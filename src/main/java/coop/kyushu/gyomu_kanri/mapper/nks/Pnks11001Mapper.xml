@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS110
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks110Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/03 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】調達加工計画書印刷 -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks11001Mapper">
+	<!-- 調達加工計画書出力データ検索する -->
+	<select id="getTyotatsuKakoPlanDataByPnks11001" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks11001Item">
+		SELECT
+		    SUBSTRING(HAITATUYMT, 1, 4)        AS 'haitatuY'
+			, SUBSTRING(HAITATUYMT, 5, 2)        AS 'haitatuM'
+			, SUBSTRING(HAITATUYMT, 7, 1)        AS 'haitatuT'
+		    , HINONKB
+		    , HINONNM
+		    , SYUHINKB
+		    , SYUHINNM
+		    , KAKOKBN
+		    , NOHINK
+		    , KYSHINCD
+		    , SUBSTRING(SHINKJ, 1, 40) AS SHINKJ
+		    , KIKAKKN
+		    , BATCHGRPNO
+		    , TOKAIKYUKJ
+		    , MAKERCD
+		    , MAKERKJ
+		    , SANTIKJ
+		    , SUBSTRING(YOKINM, 1, 12) AS YOKINM
+		    , SHIZAIKJ
+		    , SEALNM
+		    , YOSOKUSU 
+		FROM
+		    [nosan].NSTF010 
+		WHERE
+		    HAITATUYMT = #{haitatYmt} 
+		    <if test="cntr != null and cntr != ''">
+		    	AND CNTJIGCD = #{cntr} 
+		    </if>
+		ORDER BY
+		    HINONKB DESC
+		    , SYUHINKB
+		    , KAKOKBN DESC
+		    , KYSHINCD
+		    , BATCHGRPNO
+	</select>
+</mapper>

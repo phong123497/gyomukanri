@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PMSK020
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pmsk020
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/09/13 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+
+<!-- 【マスタ】名称／区分管理マスタコード一覧マッパークラス -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.msk.Pmsk020Mapper">
+
+  <!-- 名称マスタ件数取得 -->
+  <select id="getCountByPmsk020" parameterType="Map" resultType="int">
+    SELECT COUNT(*)
+    FROM [gyomu].VW_MSTMEISM AS M1
+    <where>
+      M1.RECKB = #{meishoKubun}
+      <if test="meishoCd != null and meishoCd != ''">
+        AND M1.MEICD = #{meishoCd}
+      </if>
+      <if test="meishoCdNm != null and meishoCdNm != ''">
+        AND M1.KJNM LIKE CONCAT('%', #{meishoCdNm}, '%')
+      </if>
+    </where>
+  </select>
+  <!-- 名称マスタコード一覧取得 -->
+  <select id="getMeishoCdListByPmsk020" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.msk.Pmsk020ListItem">
+    SELECT
+      M1.MEICD AS meishoCd,
+      M1.KJNM AS kanjiMeisho,
+      M1.KNNM AS kanaMeisho,
+      M1.KJRM AS kanjiRyakusho,
+      M1.KNRM AS kanaRyakusho,
+      M1.DELFLG AS delFlg
+    FROM 
+      [gyomu].VW_MSTMEISM AS M1
+    <where>
+      M1.RECKB = #{meishoKubun}
+      <if test="meishoCd != null and meishoCd != ''">
+        AND M1.MEICD = #{meishoCd}
+      </if>
+      <if test="meishoCdNm != null and meishoCdNm != ''">
+        AND M1.KJNM LIKE CONCAT('%', #{meishoCdNm}, '%')
+      </if>
+    </where>
+    ORDER BY
+      M1.RECKB,
+      M1.MEICD
+  </select>
+  <!-- 名称マスタ削除対象件数取得 -->
+  <select id="getCountDeleteTargetByPmsk020" parameterType="Map" resultType="int">
+    SELECT
+      COUNT(*)
+    FROM 
+      [gyomu].VW_MSTMEISM AS M1
+    <where>
+      M1.RECKB = #{meishoKubun}
+      AND M1.DELFLG = 0
+      <if test="meishoCd != null and meishoCd != ''">
+        AND M1.MEICD = #{meishoCd}
+      </if>
+    </where>
+  </select>
+  <!-- 名称マスタ管理区分取得 -->
+  <select id="getKanriKbnByPmsk020" parameterType="Map" resultType="int">
+    SELECT COUNT(*)
+    FROM [gyomu].MSKKBNKR AS M1
+    WHERE 
+      M1.RECKB = '00'
+      AND M1.MEICD = #{meishoCd}
+      AND M1.DELFLG = 0
+  </select>
+  <!-- 名称マスタ削除 -->
+  <update id="deleteMstmeismByPmsk020" parameterType="Map">
+    UPDATE
+      [gyomu].MSTMEISM
+    SET
+      DELFLG = 1
+      , UPDYMD = #{updymd}
+      , KUSHN_USR = #{kushn_usr}
+      , KUSHN_PRGRM = #{kushn_prgrm}
+      , KUSHN_NCHJ  = #{kushn_nchj}
+    WHERE
+      K_RECKB = #{meishoKubun}
+      AND DELFLG = 0
+      AND K_MEICD= #{meishoCd}
+  </update>
+  <!-- 区分管理マスタ削除 -->
+  <update id="deleteMskkbnkrbyPmsk020" parameterType="Map">
+    UPDATE
+      [gyomu].MSKKBNKR
+    SET
+      DELFLG = 1
+      , UPDYMD = #{updymd}
+      , KUSHN_USR= #{kushn_usr}
+      , KUSHN_PRGRM = #{kushn_prgrm}
+      , KUSHN_NCHJ = #{kushn_nchj}
+    WHERE 
+      RECKB = #{meishoKubun}
+      AND DELFLG = 0
+      AND MEICD = #{meishoCd}
+  </update>
+</mapper>

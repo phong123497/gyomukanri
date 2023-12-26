@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS090
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks090Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/14 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】バッチ情報メンテナンスマッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks090Mapper">
+	<!-- バッチマスタ情報取得 -->
+	<select id="getBatchInfByPnks090" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks090Entity">
+		SELECT		
+			BATCHNO
+			,	SEICD 			AS 'targetKaiinSeiky'
+			,	BATCHKJ 		AS 'batchNm'
+			,	BATCHRKJ 		AS 'batchRyakusho'
+			,	BATCHFLG 		AS 'batchPlanTarget'
+			,	KEIKAKUKEISU 	AS 'batchPlanKeisu'
+			,	YOSOKUKEISU 	AS 'weekYosokuKeisu'
+			,	FORMAT(KUSHN_NCHJ, 'yyyy/MM/dd HH:mm:ss.fff')		AS 'updDatm'
+		FROM		
+			[nosan].NSMM040
+		WHERE		
+			BATCHNO  	= #{batchNo}
+			AND DEL_FLG	= '0'
+	</select>
+	
+	<!-- バッチマスタ情報登録 -->
+	<insert id="insertBatchInfByPnks090" parameterType="Map">
+		INSERT
+		INTO	[nosan].NSMM040
+		(
+				BATCHNO
+			,	SEICD
+			,	BATCHKJ
+			,	BATCHRKJ
+			,	BATCHFLG
+			,	KEIKAKUKEISU
+			,	YOSOKUKEISU
+			,	DEL_FLG
+			,	SKSI_USR
+			,	SKSI_PRGRM
+			,	SKSI_NCHJ
+			,	KUSHN_USR
+			,	KUSHN_PRGRM
+			,	KUSHN_NCHJ
+		)
+		VALUES (
+				#{batchNo}
+			,	#{targetKaiinSeiky}
+			,	#{batchNm}
+			,	#{batchRyakusho}
+			,	#{batchPlanTarget}
+			,	#{batchPlanKeisu}
+			,	#{weekYosokuKeisu}
+			,	'0'
+			, 	#{userId}
+			, 	#{prgrm}
+			, 	#{nchj}
+			, 	#{userId}
+			, 	#{prgrm}
+			, 	#{nchj}
+		)
+	</insert>
+	
+	<!-- バッチマスタ情報更新 -->
+	<update id="updateBatchInfByPnks090" parameterType="Map">
+		UPDATE 	
+			[nosan].NSMM040
+		SET
+				BATCHNO			= #{batchNo}
+			,	SEICD			= #{targetKaiinSeiky}
+			,	BATCHKJ			= #{batchNm}
+			,	BATCHRKJ		= #{batchRyakusho}
+			,	BATCHFLG		= #{batchPlanTarget}
+			,	KEIKAKUKEISU	= #{batchPlanKeisu}
+			,	YOSOKUKEISU		= #{weekYosokuKeisu}
+			,	DEL_FLG			= '0'
+			,	KUSHN_USR		= #{userId}
+			,	KUSHN_PRGRM		= #{prgrm}
+			,	KUSHN_NCHJ		= #{nchj}
+		WHERE	
+			BATCHNO = #{batchNo}
+	</update>
+</mapper>

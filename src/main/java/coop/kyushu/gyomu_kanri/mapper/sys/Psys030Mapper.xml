@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- //================================================================================ 
+	// ID: PSYS030 // ProjectName: パスワード変更 
+	// SystemName: 業務管理
+	// ClassName: Psys030Mapper 
+	// // <<Modification History>> 
+	// Version  | Date       | Updated By | Content 
+	// =========+============+============+================================= 
+	// 01.00.00 | 2023/08/01 | AMC        | 新規作成 
+	//================================================================================ 
+	-->
+
+<!-- パスワード変更マッパークラス -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.sys.Psys030Mapper">
+
+	<!-- 担当者CD取得 -->
+	<select id="getTantoshaInfo" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.sys.Psys030Entity">
+		SELECT
+				TANS_CD AS	tansCd
+		FROM
+				[gyomu].MSKTANTM
+		WHERE
+				TANS_CD	=	#{tansCd}
+	</select>
+
+	<!-- パスワード取得 -->
+	<select id="getPassInfo" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.sys.Psys030PasswordInfo">
+		SELECT
+				pass
+		FROM
+				[gyomu].MSKTANTM
+		WHERE
+				TANS_CD	=	#{tansCd}
+	</select>
+
+	<!-- パスワード更新処理 -->
+	<update id="putPassYmdInfo" parameterType="Map">
+		UPDATE
+				[gyomu].MSKTANTM
+		SET
+				PASS = #{pass}
+			,	PASS_CHNG_DAY = GETDATE()
+			,	KUSHN_USR = #{kushnUsr}
+			,	KUSHN_PRGRM = #{kushnPrgrm}
+			,	KUSHN_NCHJ = GETDATE()
+		WHERE
+				TANS_CD	=	#{tansCd}
+	</update>
+
+</mapper>

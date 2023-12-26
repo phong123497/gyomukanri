@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- //================================================================================
+// ID: PMSK010
+// ProjectName: 【マスタ】名称／区分管理マスタ区分一覧
+// SystemName: 名称／区分管理マスタ区分一覧
+// ClassName: PMSK010Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// 01.00.00 | 2023/09/14 | ＡＭＣ               | 新規作成
+//================================================================================ -->
+ 
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.msk.Pmsk010Mapper">
+<!-- 名称区分、名称区分名で名称マスタ(VIEW TABLE)を検索し件数を取得す -->
+<select id="getCountByPmsk010" parameterType="Map" resultType="int">
+    SELECT COUNT(*)
+    FROM [gyomu].VW_MSTMEISM AS M1
+    <where>
+        M1.RECKB = '00' AND M1.DELFLG = '0'
+        <if test="meishoKubun != null and meishoKubun != ''">
+            AND M1.MEICD = #{meishoKubun}
+        </if>
+        <if test="meishoKubunNm != null and meishoKubunNm != ''">
+            AND M1.KJNM LIKE CONCAT('%', #{meishoKubunNm}, '%')
+        </if>
+    </where>
+</select>
+<!-- 名称区分、名称区分名で名称マスタ(VIEW TABLE)を検索し区分一覧を取得する -->
+<select id="getMeishoKubunListByPmsk010" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.msk.Pmsk010ListItem">
+    SELECT
+        M1.MEICD as meishoKubun,
+        M1.KJNM as meishoKubunNm
+    FROM
+        [gyomu].VW_MSTMEISM AS M1
+    <where>
+        M1.RECKB = '00' AND M1.DELFLG = '0'
+        <if test="meishoKubun != null and meishoKubun != ''">
+            AND M1.MEICD = #{meishoKubun}
+        </if>
+        <if test="meishoKubunNm != null and meishoKubunNm != ''">
+            AND M1.KJNM LIKE CONCAT('%', #{meishoKubunNm}, '%')
+        </if>
+    </where>
+    ORDER BY
+        M1.RECKB,
+        M1.MEICD
+</select>
+</mapper>
+ 
+																		

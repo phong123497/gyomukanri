@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: 共通
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Nsmm060Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/10 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+
+<!-- メーカーマスタッパークラス -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.com.Nsmm060Mapper">
+
+	<!-- メーカーリスト情報取得 -->
+	<select id="getMakerList" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.com.Nsmm060Entity">
+		SELECT
+			  MAKERCD				AS 'makercd'
+			, MAKERKJ				AS 'makerkj'
+			, MAKERRKJ				AS 'makerrkj'
+			, TELNO					AS 'telno'
+			, FAXNO					AS 'faxno'
+			, NYUKHM				AS 'nyukhm'
+			, PASSWORD				AS 'password'
+			, TORITEIFLG			AS 'toriteiflg'
+			, SIRECD				AS 'sirecd'
+			, NOUHINSAKIKBN			AS 'nouhinsakikbn'
+			, DEL_FLG				AS 'delFlg'
+			, SKSI_USR				AS 'sksiUsr'
+			, SKSI_PRGRM			AS 'sksiPrgrm'
+			, FORMAT(SKSI_NCHJ, 'yyyy/MM/dd HH:mm:ss.fff')		AS 'sksiNchj'
+			, KUSHN_USR				   						AS 'kushnUsr'
+			, KUSHN_PRGRM				 					AS 'kushnPrgrm'
+			, FORMAT(KUSHN_NCHJ, 'yyyy/MM/dd HH:mm:ss.fff')		AS 'kushnNchj'
+			, ID						  					AS 'id'
+		FROM
+			[nosan].NSMM060 
+		<where>
+			<if test="delFlg != null and delFlg !=''">
+				AND DEL_FLG = #{delFlg}
+			</if>
+			<if test="makercd != null and makercd !=''">
+				AND MAKERCD = #{makercd}
+			</if>
+		</where>
+		ORDER BY MAKERCD ASC
+	</select>
+</mapper>

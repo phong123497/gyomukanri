@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PCSK060
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pcsk060Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/18 | ＡＭＣ               | 新規作成
+// ===============================================================================
+-->
+<!-- 【【コープ九州商管】粗利益管理表出力データ出力マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.csk.Pcsk060Mapper">
+
+	<!-- 粗利益管理表CSV出力用データを取得する -->
+	<select id="getPrintDataByPcsk060" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk06001ListItem">
+		<include refid="getPrintDataByPcsk060Sql"></include>
+	</select>
+	
+	<!-- 粗利益管理表PDF出力用データを取得する -->
+	<select id="getPrintPdfDataByPcsk060" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk06001PdfListItem">
+		<include refid="getPrintDataByPcsk060Sql"></include>
+	</select>
+	
+	<sql id="getPrintDataByPcsk060Sql">
+		SELECT
+			MIN(T.KYM) AS PROJKKNStart
+			, MAX(T.KYM) AS PROJKKNEnd
+			, M.BUNRUICD1
+			, M.BUNRUICD2
+			, M.BUNRUICD3
+			, MAX(M.BUNRUINM) AS CATG
+			, MAX(M.DISPORD) AS DISPORD
+			, MAX(M.BUNRUILVL) AS BUNRUILVL
+			, SUM(T.KYOKYUGK) AS GOKYUUKOU
+			, CASE 
+			WHEN 
+				SUM(ISNULL(T.ZENKYKGK, 0)) = 0 THEN 0 
+			ELSE 
+				CAST(SUM(ISNULL(T.KYOKYUGK, 0)) / SUM(ISNULL(T.ZENKYKGK, 0)) * 100 AS decimal(10,2))
+			END AS ZENNENHI
+			, SUM( 
+				CASE T.KYM 
+				WHEN 
+					#{monthlyFrom} THEN T.TANAGKED 
+				ELSE 0 
+				END
+			) AS TSUKIHATSUTANAOROSHIKOU
+			, SUM(T.SHIIREGK) AS SHIIREKOU
+			, SUM(T.NEBIKIGK) AS SHIIREGARI
+			, SUM(T.TKJFRIGK) AS TAKANJOUFURIKAEKOU
+			, SUM( 
+				CASE T.KYM 
+				WHEN
+					#{monthlyTo} THEN T.TANAGKED 
+				ELSE 0 
+				END
+			) AS TSUKISUETANAOROSHIZAIKO
+			, SUM(T.KYOGENKA) AS KYOUKYUUGENKA
+			, SUM(T.ARARIGK) AS SORIRIEKOU
+			, CASE 
+			WHEN
+				SUM(ISNULL(T.KYOKYUGK, 0)) = 0	THEN 0 
+			ELSE 
+				CAST(SUM(ISNULL(T.ARARIGK, 0)) / SUM(ISNULL(T.KYOKYUGK, 0)) * 100 AS decimal(10,2))
+			END AS "soriRieKouGPR"
+			, SUM(T.YOSANSA) AS YOSANCHA
+			, SUM(T.ZENSAGK) AS ZENNENCHA
+			, CASE 
+			WHEN SUM(ISNULL(T.KYOKYUGK, 0)) = 0 THEN 0 
+			ELSE 
+				CAST(SUM(ISNULL(T.ARARIGK, 0)) / SUM(ISNULL(T.KYOKYUGK, 0)) * 100 AS decimal(10,2))
+			END - CASE 
+			WHEN SUM(ISNULL(T.ZENKYKGK, 0)) = 0 THEN 0 
+			ELSE 
+				CAST(SUM(ISNULL(T.ZENARIGK, 0)) / SUM(ISNULL(T.ZENKYKGK, 0)) * 100 AS decimal(10,2))
+			END AS ZENNENCHAGPR
+			, SUM(T.NENKEI) AS NENKEI
+			, SUM(T.KYOJYGK) AS KYOUKYUUJOURYOKIN
+			, CASE 
+			WHEN SUM(ISNULL(T.KYOKYUGK, 0)) = 0 THEN 0 
+			ELSE CAST(SUM(ISNULL(T.KYOJYGK, 0)) / SUM(ISNULL(T.KYOKYUGK, 0)) * 100 AS decimal(10,2))
+			END AS KYOUKYUUJOURYOKINGPR
+		FROM
+		( 
+			SELECT
+				M.DAIBNCD
+				, M.BUNRUICD1
+				, M.BUNRUICD2
+				, M.BUNRUICD3
+				, M.BUNRUINM3 AS BUNRUINM
+				, M.DISPORD
+				, 3 AS BUNRUILVL
+			FROM
+				[shokan].SKTM0007 M 
+				WHERE
+					M.BUNRUILVL = 3 
+				UNION ALL 
+			SELECT
+				M.DAIBNCD
+				, M.BUNRUICD1
+				, M.BUNRUICD2
+				, ' ' AS BUNRUICD3
+				, M.BUNRUINM2 AS BUNRUINM
+				, M.DISPORD
+				, 2 AS BUNRUILVL 
+			FROM
+				[shokan].SKTM0007 M 
+				WHERE
+				M.BUNRUILVL IN (2, 3) 
+				UNION ALL 
+			SELECT
+				M.DAIBNCD
+				, M.BUNRUICD1
+				, ' ' AS BUNRUICD2
+				, ' ' AS BUNRUICD3
+				, M.BUNRUINM1 AS BUNRUINM
+				, M.DISPORD
+				, 1 AS BUNRUILVL 
+			FROM
+				[shokan].SKTM0007 M 
+				UNION ALL 
+			SELECT
+				M.DAIBNCD
+				, ' ' AS BUNRUICD1
+				, ' ' AS BUNRUICD2
+				, ' ' AS BUNRUICD3
+				, '合 計 ' AS BUNRUINM
+				, 99 AS DISPORD
+				, 1 AS BUNRUILVL
+			FROM
+				[shokan].SKTM0007 M
+		) M 
+		INNER 
+		<if test='shubt=="1" '>
+			JOIN [shokan].SKTF0007 T 
+		</if>
+		<if test='shubt!="1" '>
+			JOIN [shokan].SKTF0009 T 
+		</if>
+				ON M.DAIBNCD = T.DAIBNCD 
+		WHERE
+			T.KYM BETWEEN #{monthlyFrom} AND #{monthlyTo} 
+		<if test='mngTaikeiKbn=="2"'>
+			AND T.KAIKEBMN IN  
+				<foreach collection='cList' item='id' open='(' separator=',' close=')'>
+					#{id}
+				</foreach>
+		</if> 
+		GROUP BY
+			M.BUNRUICD1
+			, M.BUNRUICD2
+			, M.BUNRUICD3
+		ORDER BY
+			MAX(M.DISPORD)
+			, MAX(M.BUNRUILVL) DESC
+	</sql>
+	<!-- 【コープ九州商管】粗利益管理表出力情報運用日の年月度を取得をする。 -->
+	<select id="getNendoByPcsk060" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk060YmItemEntity">
+		SELECT
+			KYM
+			, NENDO 
+		FROM
+			[shokan].SKTM0001 M1 
+		INNER JOIN [shokan].SKTM0004 M4 
+			ON M1.KYM = SUBSTRING(M4.YMD, 1, 6) 
+			AND M4.SYSID = 'QCOOP'
+	</select>
+	<!-- 【コープ九州商管】粗利益管理表出力情報運用日の月度を取得する。 -->
+	<select id="getGetsudoByPcsk060" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk060YmItemEntity">
+		SELECT
+			KYM 
+		FROM
+			[shokan].SKTM0001 M1 
+		INNER JOIN 
+		[shokan].SKTM0004 M4 
+			ON M1.KYM = SUBSTRING(M4.YMD,1,6) 
+			AND M4.SYSID = 'QCOOP'
+	</select>
+	<!-- 【コープ九州商管】粗利益管理表出力情報運用日以前の年度を取得。 -->
+	<select id="getBeforeNendoByPcsk060" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk060YmItemEntity">
+		 SELECT DISTINCT
+			NENDO 
+		FROM
+			[shokan].SKTM0001 
+		WHERE
+			KYM &lt;= #{kym}
+		ORDER BY
+			NENDO
+	</select>
+	<!-- 【コープ九州商管】粗利益管理表出力情報運用日以前の月度取得する。 -->
+	<select id="getBeforeGetsudoByPcsk060" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk060YmItemEntity">
+		SELECT
+			KYM
+		FROM
+			[shokan].SKTM0001 
+		WHERE
+			NENDO = #{nendo} 
+			AND KYM &lt;= #{kym}
+		ORDER BY
+			KYM
+	</select>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PCSK040
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pcsk040
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/8/21 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+<!-- 【コープ九州商管】締日登録マッパー -->
+
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.csk.Pcsk040Mapper">
+
+	<!-- 営業日を取得する -->
+	<select id="getDateByPcsk040" parameterType="Map" resultType="String">
+		SELECT CONVERT(VARCHAR, CONVERT(DATE, STUFF(STUFF(YMD, 7, 0, '/'), 5, 0, '/')), 111) AS YMD
+		FROM
+			[shokan].SKTM0004
+		WHERE
+			SYSID = 'QCOOP';					
+	</select>
+	
+	<!-- 計上年月を取得する -->
+	<select id="getSKBTGFLGByPcsk040" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk040Item">
+		SELECT  KYM	AS KEIJOYM			
+		FROM
+			[shokan]. SKTM0001				
+		WHERE
+			SKBTGFLG = '1'	
+	</select>
+	
+	<!-- 計上年月を取得する -->
+	<select id="getKRBTGFLGByPcsk040" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk040Item">
+		SELECT  KYM	AS KEIJOYM		
+		FROM 
+			[shokan]. SKTM0001				
+		WHERE  
+			KRBTGFLG = '1'
+	</select>
+	
+	<!-- 計上年月、商品管理部締日、商品管理部当月度フラグ、経理部締日、経理部当月度フラグを取得する。 -->
+	<select id="getKYMFByPcsk040" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk040Item">
+		SELECT
+			KYM AS KEIJOYM,
+			CQMOSIMBIDAY AS CPKYUSHUMONTHCLOSEDAY,
+			SKS_KSKMSHGPRCDAY AS KESHIKMSHOGOPROCSDAYPROCSDay,
+			SKS_MOPRCKBN AS MOPRCKBN,
+			SKS_KSKMSHGPRCKBN AS KESHIKMSHOGOPROCSDAYPROCSKBN,
+			CASE
+				WHEN SKBSIMBI IS NULL OR SKBSIMBI = '' THEN NULL
+				ELSE CONVERT(VARCHAR, CONVERT(DATE, STUFF(STUFF(SKBSIMBI, 7, 0, '/'), 5, 0, '/')), 111)
+				END AS SHINMNGHYOCLOSEDAYSHINMNG,
+				SKBTGFLG,
+			CASE
+				WHEN KRBSIMBI IS NULL OR KRBSIMBI = '' THEN NULL
+				ELSE CONVERT(VARCHAR, CONVERT(DATE, STUFF(STUFF(KRBSIMBI, 7, 0, '/'), 5, 0, '/')), 111)
+			END AS SHINMNGHYOCLOSEDAYKEIRI,
+			KRBTGFLG
+		FROM
+			[shokan].SKTM0001
+		WHERE
+			NENDO =#{nedo, jdbcType=INTEGER}
+		ORDER BY
+			KYM;
+	</select>
+	
+	<update id="updateAll" parameterType="Map">
+	UPDATE  [shokan].SKTM0001	
+	SET  
+		CQMOSIMBIDAY = #{cpkyushuMonthCloseDay}
+		,SKBSIMBI = #{shinMngHyoCloseDayShinMng}
+		,KRBSIMBI = #{shinMngHyoCloseDayKeiri}
+		,SKS_KSKMSHGPRCDAY = #{keshikmShogoProcsDayProcsDay}
+		, KUSHN_USR = #{usr}
+		, KUSHN_PRGRM = #{prgrm}
+		, KUSHN_NCHJ = #{nchj}
+	WHERE  
+		KYM = #{keijoYm}	
+	</update>
+</mapper>

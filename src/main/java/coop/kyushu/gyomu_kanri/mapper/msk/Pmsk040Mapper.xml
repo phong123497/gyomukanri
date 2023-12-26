@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: Pmsk040
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pmsk040Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// 01.00.00 | 2023/09/14 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【マスク】企画商品マスタ一覧マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.msk.Pmsk040Mapper">
+    <!-- 企画商品一覧取得 -->
+    <select id="getKikakuShohinListByPmsk040" parameterType="Map"
+            resultType="coop.kyushu.gyomu_kanri.entity.msk.Pmsk040ListItem">
+        SELECT
+        CQKIKANO AS 'kikakuNo'
+        , KYSHINCD AS 'kyodoCd'
+        , SEICD AS 'seiCd'
+        , CQSHINCD AS 'shohinCd'
+        , JANCD1 AS 'janCd'
+        , SHINKJ AS 'shohinNm'
+        , KIKAKKN AS 'kikakukana'
+        , GENTAN AS 'gentanka'
+        , BAITAN AS 'uritanka'
+        , DAIBNCD AS 'daibunrui'
+        , QRCTUKKB AS 'tsukaKubun'
+        , SYUHINKB AS 'shuhinKubun'
+        , SIRECD AS 'shiiresakiCd'
+        , HATUCD AS 'hatyusakiCd'
+        , SHINRUTO AS 'shohinRoute'
+        FROM
+        [gyomu].MSTKISHM
+        WHERE
+        DELFLG = 0
+        <if test="kikakuNoStart !='' and kikakuNoStart !=null">
+            AND CQKIKANO &gt;= #{kikakuNoStart}
+        </if>
+        <if test="kikakuNoEnd !='' and kikakuNoEnd !=null">
+            AND CQKIKANO &lt;= #{kikakuNoEnd}
+        </if>
+        <if test="kyodoCdStart !='' and kyodoCdStart !=null">
+            AND KYSHINCD &gt;= CONVERT(INT, #{kyodoCdStart})
+        </if>
+        <if test="kyodoCdEnd !='' and kyodoCdEnd !=null">
+            AND KYSHINCD &lt;= CONVERT(INT, #{kyodoCdEnd})
+        </if>
+        <if test="seiCdStart !='' and seiCdStart !=null">
+            AND SEICD &gt;= CONVERT(INT, #{seiCdStart})
+        </if>
+        <if test="seiCdEnd !='' and seiCdEnd !=null">
+            AND SEICD &lt;= CONVERT(INT, #{seiCdEnd})
+        </if>
+        <if test="shohinCd !='' and shohinCd !=null">
+            AND CQSHINCD = #{shohinCd}
+        </if>
+        <if test="janCd !='' and janCd !=null">
+            AND JANCD1 LIKE CONCAT('%', #{janCd}, '%')
+        </if>
+        <if test="daibunrui !='' and daibunrui !=null">
+            AND DAIBNCD = #{daibunrui}
+        </if>
+        <if test="shohinRoute !='' and shohinRoute !=null">
+            AND SHINRUTO = #{shohinRoute}
+        </if>
+        <if test="tsukaKubun !='' and tsukaKubun !=null">
+            AND QRCTUKKB = #{tsukaKubun}
+        </if>
+        <if test="shuhinKubun !='' and shuhinKubun !=null">
+            AND SYUHINKB = #{shuhinKubun}
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 == '' and shiiresakiCd1 == '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD = #{hatyusakiCd1})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 != '' and shiiresakiCd1 == '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD = #{hatyusakiCd2})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 == '' and shiiresakiCd1 != '' and shiiresakiCd2 == '')
+        ">
+            AND (SIRECD = #{shiiresakiCd1})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 == '' and shiiresakiCd1 == '' and shiiresakiCd2 != '')
+        ">
+            AND (SIRECD = #{shiiresakiCd2})
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 != '' and shiiresakiCd1 == '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD IN (#{hatyusakiCd1}, #{hatyusakiCd2}))
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 == '' and shiiresakiCd1 != '' and shiiresakiCd2 != '')
+        ">
+            AND (SIRECD IN (#{shiiresakiCd1}, #{shiiresakiCd2}))
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 == '' and shiiresakiCd1 != '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd1})
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 == '' and shiiresakiCd1 == '' and shiiresakiCd2 != '')
+        ">
+            AND (HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd2})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 != '' and shiiresakiCd1 == '' and shiiresakiCd2 != '')
+        ">
+            AND (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd2})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 != '' and shiiresakiCd1 != '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd1})
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 != '' and shiiresakiCd1 != '' and shiiresakiCd2 == '')
+        ">
+            AND ((HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd1}))
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 != '' and shiiresakiCd1 == '' and shiiresakiCd2 != '')
+        ">
+            AND ((HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd2})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd2}))
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 == '' and shiiresakiCd1 != '' and shiiresakiCd2 != '')
+        ">
+            AND ((HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd2}))
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 != '' and shiiresakiCd1 != '' and shiiresakiCd2 != '')
+        ">
+            AND ((HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd2}))
+        </if>
+        <if test="hatyusakiCd1 != '' and hatyusakiCd2 != '' and shiiresakiCd1 != '' and shiiresakiCd2 != ''
+                  and  hatyusakiCd1 != null and hatyusakiCd2 != null and shiiresakiCd1 != null and shiiresakiCd2 != null
+        ">
+            AND ((HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd2})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd2}))
+        </if>
+        ORDER BY
+        CQKIKANO,
+        KYSHINCD,
+        SEICD,
+        CQSHINCD
+    </select>
+
+    <!-- 入力された条件に合うデータの件数を取得。 -->
+    <select id="getCountByPmsk040" parameterType="Map" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM
+        [gyomu].MSTKISHM
+        WHERE
+        DELFLG = 0
+        <if test="kikakuNoStart !='' and kikakuNoStart !=null">
+            AND CQKIKANO &gt;= #{kikakuNoStart}
+        </if>
+        <if test="kikakuNoEnd !='' and kikakuNoEnd !=null">
+            AND CQKIKANO &lt;= #{kikakuNoEnd}
+        </if>
+        <if test="kyodoCdStart !='' and kyodoCdStart !=null">
+            AND KYSHINCD &gt;= CONVERT(INT, #{kyodoCdStart})
+        </if>
+        <if test="kyodoCdEnd !='' and kyodoCdEnd !=null">
+            AND KYSHINCD &lt;= CONVERT(INT, #{kyodoCdEnd})
+        </if>
+        <if test="seiCdStart !='' and seiCdStart !=null">
+            AND SEICD &gt;= CONVERT(INT, #{seiCdStart})
+        </if>
+        <if test="seiCdEnd !='' and seiCdEnd !=null">
+            AND SEICD &lt;= CONVERT(INT, #{seiCdEnd})
+        </if>
+        <if test="shohinCd !='' and shohinCd !=null">
+            AND CQSHINCD = #{shohinCd}
+        </if>
+        <if test="janCd !='' and janCd !=null">
+            AND JANCD1 LIKE CONCAT('%', #{janCd}, '%')
+        </if>
+        <if test="daibunrui !='' and daibunrui !=null">
+            AND DAIBNCD = #{daibunrui}
+        </if>
+        <if test="shohinRoute !='' and shohinRoute !=null">
+            AND SHINRUTO = #{shohinRoute}
+        </if>
+        <if test="tsukaKubun !='' and tsukaKubun !=null">
+            AND QRCTUKKB = #{tsukaKubun}
+        </if>
+        <if test="shuhinKubun !='' and shuhinKubun !=null">
+            AND SYUHINKB = #{shuhinKubun}
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 == '' and shiiresakiCd1 == '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD = #{hatyusakiCd1})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 != '' and shiiresakiCd1 == '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD = #{hatyusakiCd2})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 == '' and shiiresakiCd1 != '' and shiiresakiCd2 == '')
+        ">
+            AND (SIRECD = #{shiiresakiCd1})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 == '' and shiiresakiCd1 == '' and shiiresakiCd2 != '')
+        ">
+            AND (SIRECD = #{shiiresakiCd2})
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 != '' and shiiresakiCd1 == '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD IN (#{hatyusakiCd1}, #{hatyusakiCd2}))
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 == '' and shiiresakiCd1 != '' and shiiresakiCd2 != '')
+        ">
+            AND (SIRECD IN (#{shiiresakiCd1}, #{shiiresakiCd2}))
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 == '' and shiiresakiCd1 != '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd1})
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 == '' and shiiresakiCd1 == '' and shiiresakiCd2 != '')
+        ">
+            AND (HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd2})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 != '' and shiiresakiCd1 == '' and shiiresakiCd2 != '')
+        ">
+            AND (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd2})
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 != '' and shiiresakiCd1 != '' and shiiresakiCd2 == '')
+        ">
+            AND (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd1})
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 != '' and shiiresakiCd1 != '' and shiiresakiCd2 == '')
+        ">
+            AND ((HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd1}))
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 != '' and shiiresakiCd1 == '' and shiiresakiCd2 != '')
+        ">
+            AND ((HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd2})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd2}))
+        </if>
+        <if test="(hatyusakiCd1 != '' and hatyusakiCd2 == '' and shiiresakiCd1 != '' and shiiresakiCd2 != '')
+        ">
+            AND ((HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd2}))
+        </if>
+        <if test="(hatyusakiCd1 == '' and hatyusakiCd2 != '' and shiiresakiCd1 != '' and shiiresakiCd2 != '')
+        ">
+            AND ((HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd2}))
+        </if>
+        <if test="hatyusakiCd1 != '' and hatyusakiCd2 != '' and shiiresakiCd1 != '' and shiiresakiCd2 != ''
+                  and  hatyusakiCd1 != null and hatyusakiCd2 != null and shiiresakiCd1 != null and shiiresakiCd2 != null
+        ">
+            AND ((HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd1} AND SIRECD = #{shiiresakiCd2})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd1})
+            OR (HATUCD = #{hatyusakiCd2} AND SIRECD = #{shiiresakiCd2}))
+        </if>
+    </select>
+</mapper>
+

@@ -1,0 +1,34 @@
+//================================================================================
+// ID: Pnks070
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks070Form
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// ---------+------------+----------------------+---------------------------------
+// 01.00.00 | 2023/07/25 | ＡＭＣ               | 新規作成
+//================================================================================
+package coop.kyushu.gyomu_kanri.form.nks;
+
+import java.io.Serializable;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * <pre>
+ * 【農産企画支援】価格取込用データ出力フォーム
+ * </pre>
+ */
+@Getter
+@Setter
+public class Pnks070Form implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	/** 企画番号開始 */
+	private String projNoStart;
+
+	/** 企画番号終了 */
+	private String projNoEnd;
+}

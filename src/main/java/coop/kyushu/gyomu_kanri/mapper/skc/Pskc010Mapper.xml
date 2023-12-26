@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PSKC010
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pskc010Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/11 | ＡＭＣ               | 新規作成
+//================================================================================-->
+<!-- 【惣菜加工センター】値付実績データ取込画面 -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.skc.Pskc010Mapper">
+	<!-- 値付実績取込ワークを削除する -->
+	<delete id="deleteWorkTableByPskc010" parameterType="String">
+	DELETE 
+	FROM
+		[sozai].NJWK0001 
+	WHERE
+		UUID = #{USERID}
+	</delete>
+	
+	<!-- 受付番号を取得する -->
+	<select id="selectUkeNoByPskc010" parameterType="String" resultType="BigDecimal">
+		SELECT
+			CASE 
+				WHEN MAX(UKENO) IS NULL 
+					THEN 1 
+				ELSE MAX(UKENO) + 1 
+				END AS UKENO 
+		FROM
+			[sozai].NJTF0001 
+		WHERE
+			HATDATE = #{DATE};
+	</select>
+	
+	<!-- 名称マスタのカウントを検索する -->
+	<select id="selectMstmeismCountByPskc010" parameterType="Map" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			[gyomu].MSTMEISM
+		WHERE
+			MSTMEISM.K_RECKB = #{RECKB}
+			AND MSTMEISM.K_MEICD = #{MEICD}
+			AND MSTMEISM.DELFLG != 1
+	</select>
+	
+	<!-- 店舗商品マスタを検索する -->
+	<select id="selectTenpoShoHinCountByPskc010" parameterType="Map" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			[gyomu].GMCSHING
+		WHERE
+			GMCSHING.CQSHINCD = #{CQSHINCD}
+			AND GMCSHING.JIGYOCD = #{JIGYOCD}
+			AND GMCSHING.DELFLG != 1
+	</select>
+	
+	<!-- 値付累積データカウントを検索する -->
+	<select id="selectRzsouzaiRuiCountByPskc010" parameterType="Map" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			[gyomu].RZSOUZAI_RUI
+		WHERE
+			RZSOUZAI_RUI.NODATE = #{NODATE}
+			AND RZSOUZAI_RUI.TSBCD = #{TSBCD}
+			AND RZSOUZAI_RUI.HINCD = #{HINCD}
+	</select>
+	
+	<!-- 値付実績チェック結果に登録する -->
+	<insert id="insertCheckTableByPskc010" parameterType="Map">
+		INSERT 
+		INTO [sozai].NJTF0002( 
+			HATDATE
+			, HATTIME
+			, USERID
+			, UKENO
+			, NODATE
+			, TSBCD
+			, HINCD
+			, PSSU
+			, ERRMSG
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		) 
+		VALUES ( 
+			#{HATDATE}
+			, #{HATTIME}
+			, #{USERID}
+			, #{UKENO}
+			, #{NODATE}
+			, #{TSBCD}
+			, #{HINCD}
+			, #{PSSU}
+			, #{ERRMSG}
+			, #{SKSI_USR}
+			, #{SKSI_PRGRM}
+			, #{SKSI_NCHJ}
+			, #{KUSHN_USR}
+			, #{KUSHN_PRGRM}
+			, #{KUSHN_NCHJ}
+		)
+	</insert>
+	
+	<!-- 値付実績取込ワークに登録する -->
+	<insert id="insertWorkTableByPskc010" parameterType="Map">
+		INSERT 
+		INTO [sozai].NJWK0001( 
+			UUID
+			, SEQNO
+			, NODATE
+			, SEICD
+			, SEIKNRM
+			, TSBCD
+			, TSBKNRM
+			, HBUNCD
+			, HBUNKNM
+			, HINCD
+			, HINKNM
+			, KIRYOKB
+			, KIRYOKNM
+			, PSSU
+			, JYURYO
+			, UKINGK
+			, GKINGK
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		)
+		VALUES(
+			#{UUID}
+			, #{SEQNO}
+			, #{NODATE}
+			, #{SEICD}
+			, #{SEIKNRM}
+			, #{TSBCD}
+			, #{TSBKNRM}
+			, #{HBUNCD}
+			, #{HBUNKNM}
+			, #{HINCD}
+			, #{HINKNM}
+			, #{KIRYOKB}
+			, #{KIRYOKNM}
+			, #{PSSU}
+			, #{JYURYO}
+			, #{UKINGK}
+			, #{GKINGK}
+			, #{SKSI_USR}
+			, #{SKSI_PRGRM}
+			, #{SKSI_NCHJ}
+			, #{KUSHN_USR}
+			, #{KUSHN_PRGRM}
+			, #{KUSHN_NCHJ}
+		)
+	</insert>
+	
+	<!-- 値付実績データに登録する -->
+	<insert id="insertSouzaiJdByPskc010" parameterType="Map">
+		INSERT 
+		INTO [sozai].NJTF0001( 
+			HATDATE
+			, HATTIME
+			, USERID
+			, UKENO
+			, SEQNO
+			, NODATE
+			, SEICD
+			, SEIKNRM
+			, TSBCD
+			, TSBKNRM
+			, HBUNCD
+			, HBUNKNM
+			, HINCD
+			, HINKNM
+			, KIRYOKB
+			, KIRYOKNM
+			, PSSU
+			, JYURYO
+			, UKINGK
+			, GKINGK
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		)
+		(
+			SELECT
+				#{HATDATE}
+				, #{HATTIME}
+				, UUID
+				, #{UKENO}
+				, SEQNO
+				, NODATE
+				, SEICD
+				, SEIKNRM
+				, TSBCD
+				, TSBKNRM
+				, HBUNCD
+				, HBUNKNM
+				, HINCD
+				, HINKNM
+				, KIRYOKB
+				, KIRYOKNM
+				, PSSU
+				, JYURYO
+				, UKINGK
+				, GKINGK
+				, SKSI_USR
+				, SKSI_PRGRM
+				, SKSI_NCHJ
+				, KUSHN_USR
+				, KUSHN_PRGRM
+				, KUSHN_NCHJ
+			FROM
+				[sozai].NJWK0001
+			WHERE
+				NJWK0001.UUID = #{USERID}
+		)
+	</insert>
+	
+	<!-- 値付実績当日累積に登録する -->
+	<insert id="insertRzsouzaiTouByPskc010" parameterType="Map">
+		INSERT
+		INTO [gyomu].RZSOUZAI_TOU(
+			NODATE
+			, SEICD
+			, SEIKNRM
+			, TSBCD
+			, TSBKNRM
+			, HBUNCD
+			, HBUNKNM
+			, HINCD
+			, HINKNM
+			, KIRYOKB
+			, KIRYOKNM
+			, PSSU
+			, JYURYO
+			, UKINGK
+			, GKINGK
+			, HATDATE
+			, HATTIME
+			, USERID
+			, UKENO
+			, SKSI_USR
+			, SKSI_PRGRM
+			, SKSI_NCHJ
+			, KUSHN_USR
+			, KUSHN_PRGRM
+			, KUSHN_NCHJ
+		)
+		(
+			SELECT
+				NODATE
+				, SEICD
+				, SEIKNRM
+				, TSBCD
+				, TSBKNRM
+				, HBUNCD
+				, HBUNKNM
+				, HINCD
+				, HINKNM
+				, KIRYOKB
+				, KIRYOKNM
+				, PSSU
+				, JYURYO
+				, UKINGK
+				, GKINGK
+				, HATDATE
+				, HATTIME
+				, USERID
+				, UKENO
+				, SKSI_USR
+				, SKSI_PRGRM
+				, SKSI_NCHJ
+				, KUSHN_USR
+				, KUSHN_PRGRM
+				, KUSHN_NCHJ  
+			FROM
+				[sozai].NJTF0001
+			WHERE
+				NJTF0001.HATDATE = #{HATDATE} 
+				AND NJTF0001.HATTIME = #{HATTIME} 
+				AND NJTF0001.USERID = #{USERID} 
+				AND NJTF0001.UKENO = #{UKENO}
+		)
+	</insert>
+	
+	<!-- 挿入済みの値付実績データ数を検索する -->
+	<select id="selectSouzaiJdCountByPskc010" parameterType="Map" resultType="int">
+		SELECT
+			COUNT(*) 
+		FROM
+			[sozai].NJTF0001 
+		WHERE
+			NJTF0001.HATDATE = #{HATDATE} 
+			AND NJTF0001.HATTIME = #{HATTIME} 
+			AND NJTF0001.USERID = #{USERID} 
+			AND NJTF0001.UKENO = #{UKENO}
+	</select>
+</mapper>

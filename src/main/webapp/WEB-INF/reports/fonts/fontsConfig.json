@@ -1,0 +1,11 @@
+{
+    "path": ""
+    , "descriptors": [
+        {
+            "name": "IPA明朝"
+            , "source": "fonts/ipam.ttc"
+            , "postscriptName": "IPAMincho"
+            , "useAsDefault": true
+        }
+    ]
+}

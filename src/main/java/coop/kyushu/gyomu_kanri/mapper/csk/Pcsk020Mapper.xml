@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PCSK020
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pcsk020Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/18 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【コープ九州商管】CSV出力マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.csk.Pcsk020Mapper">
+
+	<!-- 諸伝票（CORE分）データを取得する -->
+	<select id="getPcsk020VarDempyoCoreItem" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk020VarDempyoCoreItem">
+		SELECT
+			M1.KYM
+			, M1.ARABUNCD
+			, M1.DENDATE
+			, M1.DENNO
+			, M1.GYONO
+			, M1.KRKMKCD
+			, M1.KRHKMCD
+			, M1.KRBMNCD
+			, M1.KRTORIKB
+			, M1.KRTORICD
+			, M1.KRKNCD1
+			, M1.KRKNCD2
+			, M1.KRKNCD3
+			, M1.KRKNCD4
+			, M1.KRZEICD
+			, M1.KRZEINKB
+			, M1.KRSIWGKN
+			, M1.KRZEIGK
+			, M1.KRSIWGKK
+			, M1.KRTEKIY1
+			, M1.KRTEKIY2
+			, M1.KSKMKCD
+			, M1.KSHKMCD
+			, M1.KSBMNCD
+			, M1.KSTORIKB
+			, M1.KSTORICD
+			, M1.KSKNCD1
+			, M1.KSKNCD2
+			, M1.KSKNCD3 
+			, M1.KSKNCD4
+			, M1.KSZEICD
+			, M1.KSZEINKB
+			, M1.KSSIWGKN
+			, M1.KSZEIGK
+			, M1.KSSIWGKK
+			, M1.KSTEKIY1
+			, M1.KSTEKIY2
+			, M1.KAIKYMD 
+			, M1.KAIKTIME
+			, CONVERT(varchar (8), M1.SKSI_NCHJ, 112) AS 'addymd'
+			, REPLACE (CONVERT(varchar (8), M1.SKSI_NCHJ, 108), ':', '') AS 'addtime'
+			, M1.SKSI_USR AS userid
+		FROM
+			[shokan].SKTF0004 M1
+		<where>
+			<include refid="sqlWhere"></include>
+		</where>
+	</select>
+
+	<!-- 諸伝票（AP分）データを取得する -->
+	<select id="getPcsk020VarDempyoApItem" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk020VarDempyoApItem">
+		SELECT
+			M1.KYM
+			, M1.ARABUNCD
+			, M1.DENDATE
+			, M1.DENKB
+			, M1.DENNO
+			, M1.GYONO
+			, M1.TSHNTKB
+			, M1.KRKMKCD
+			, M1.KRHKMCD
+			, M1.KRBMNCD
+			, M1.KRTORIKB
+			, M1.KRTORICD
+			, M1.KRKNCD1
+			, M1.KRKNCD2
+			, M1.KRKNCD3
+			, M1.KRKNCD4
+			, M1.KRZEICD
+			, M1.KRZEINKB
+			, M1.KRSIWGKN
+			, M1.KRZEIGK
+			, M1.KRSIWGKK
+			, M1.KRTEKIY
+			, M1.KSKMKCD
+			, M1.KSHKMCD
+			, M1.KSBMNCD
+			, M1.KSTORIKB
+			, M1.KSTORICD
+			, M1.KSKNCD1
+			, M1.KSKNCD2
+			, M1.KSKNCD3
+			, M1.KSKNCD4
+			, M1.KSZEICD
+			, M1.KSZEINKB
+			, M1.KSSIWGKN
+			, M1.KSZEIGK
+			, M1.KSSIWGKK
+			, M1.KSTEKIY
+			, CONVERT(varchar (8), M1.SKSI_NCHJ, 112) AS 'addymd'
+			, REPLACE (CONVERT(varchar (8), M1.SKSI_NCHJ, 108), ':', '') AS 'addtime'
+			, M1.SKSI_USR AS userid
+		FROM
+			[shokan].SKTF0005 M1
+		<where>
+			<include refid="sqlWhere"></include>
+		</where>
+	</select>
+	
+	<!-- 在庫調整伝票データを取得する -->
+	<select id="getPcsk020ZkChsDempyoItem" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk020ZkChsDempyoItem">
+		SELECT
+			M1.DENNO
+			, M1.GYONO
+			, M1.KYM
+			, M1.CENTCD
+			, M1.JIGYOSKB
+			, M1.DAIBUNCD
+			, M1.CQSHINCD
+			, M1.SIRE_TANK 	AS 'sireTank'
+			, M1.HZAI_SU		AS 'hzaiSu'
+			, M1.HZAI_GAK		AS 'hzaiGak'
+			, M1.SEKI_SU		AS 'sekiSu'
+			, M1.SEKI_GAK		AS 'sekiGak'
+			, CONVERT(varchar (8), M1.SKSI_NCHJ, 112) AS 'addymd'
+			, REPLACE (CONVERT(varchar (8), M1.SKSI_NCHJ, 108), ':', '') AS 'addtime'
+			, M1.SKSI_USR AS userid
+		FROM
+			[shokan].SKTF0003 M1
+		<where>
+			<include refid="sqlWhere"></include>
+		</where>
+	</select>
+	
+	<!-- 振替伝票データを取得する -->
+	<select id="getPcsk020FurikaeDempyoItem" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk020FurikaeDempyoItem">
+		SELECT
+			M1.KYM
+			, M1.DENNO
+			, M1.GYONO
+			, M1.DENDATE
+			, M1.SCENTCD
+			, M1.NCENTCD
+			, M1.CQSHINCD
+			, M1.SURYO
+			, M1.KINGAKU
+			, M1.HASEIMKB
+			, CONVERT(varchar (8), M1.SKSI_NCHJ, 112) AS 'addymd'
+			, REPLACE (CONVERT(varchar (8), M1.SKSI_NCHJ, 108), ':', '') AS 'addtime'
+			, M1.SKSI_USR AS userid
+		FROM
+			[shokan].SKWV0001_ M1
+		<where>
+			<include refid="sqlWhere"></include>
+		</where>
+	</select>
+	
+	<!-- 廃棄伝票データを取得する -->
+	<select id="getPcsk020HaikiDempyoItem" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.csk.Pcsk020HaikiDempyoItem">
+		SELECT
+			M1.KYM
+			, M1.DENNO
+			, M1.GYONO
+			, M1.DENDATE
+			, M1.CENTCD
+			, M1.CQSHINCD
+			, M1.SURYO
+			, M1.KINGAKU
+			, M1.HASEIMKB
+			, CONVERT(varchar (8), M1.SKSI_NCHJ, 112) AS 'addymd'
+			, REPLACE (CONVERT(varchar (8), M1.SKSI_NCHJ, 108), ':', '') AS 'addtime'
+		    , M1.SKSI_USR AS userid
+		FROM
+			[shokan].SKWV0002_ M1
+		<where>
+			<include refid="sqlWhere"></include>
+		</where>
+	</select>
+	
+	<!-- 検索条件 -->
+	<sql id="sqlWhere">
+		<choose>
+			<when test="dempyoHizukeFrom != '' and dempyoHizukeTo != ''">
+				AND M1.DENDATE <![CDATA[ >= ]]> #{dempyoHizukeFrom}
+				AND M1.DENDATE <![CDATA[ <= ]]> #{dempyoHizukeTo}
+			</when>
+			<when test='dempyoHizukeFrom != "" and dempyoHizukeTo == ""'>
+				AND M1.DENDATE = #{dempyoHizukeFrom}
+			</when>
+			<when test='dempyoHizukeFrom == "" and dempyoHizukeTo != ""'>
+				AND M1.DENDATE = #{dempyoHizukeTo}
+			</when>
+		</choose>
+		<if test="monthly != null and monthly != ''">
+			AND M1.KYM = #{monthly}
+		</if>
+		<choose>
+			<when test="cntrFrom != '' and cntrTo != ''">
+				AND M1.CENTCD <![CDATA[ >= ]]> #{cntrFrom}
+				AND M1.CENTCD <![CDATA[ <= ]]> #{cntrTo}
+			</when>
+			<when test='cntrFrom != "" and cntrTo == ""'>
+				AND M1.CENTCD = #{cntrFrom}
+			</when>
+			<when test='cntrFrom == "" and cntrTo != ""'>
+				AND M1.CENTCD = #{cntrTo}
+			</when>
+		</choose>
+		<choose>
+			<when test="shukkoCntrFrom != '' and shukkoCntrTo != ''">
+				AND M1.SCENTCD <![CDATA[ >= ]]> #{shukkoCntrFrom}
+				AND M1.SCENTCD <![CDATA[ <= ]]> #{shukkoCntrTo}
+			</when>
+			<when test='shukkoCntrFrom != "" and shukkoCntrTo == ""'>
+				AND M1.SCENTCD = #{shukkoCntrFrom}
+			</when>
+			<when test='shukkoCntrFrom == "" and shukkoCntrTo != ""'>
+				AND M1.SCENTCD = #{shukkoCntrTo}
+			</when>
+		</choose>
+		<choose>
+			<when test="nyukoCntrFrom != '' and nyukoCntrTo != ''">
+				AND M1.NCENTCD <![CDATA[ >= ]]> #{nyukoCntrFrom}
+				AND M1.NCENTCD <![CDATA[ <= ]]> #{nyukoCntrTo}
+			</when>
+			<when test='nyukoCntrFrom != "" and nyukoCntrTo == ""'>
+				AND M1.NCENTCD = #{nyukoCntrFrom}
+			</when>
+			<when test='nyukoCntrFrom == "" and nyukoCntrTo != ""'>
+				AND M1.NCENTCD = #{nyukoCntrTo}
+			</when>
+		</choose>
+		<if test="jigyoKbn != 9 and jigyoKbn != ''">
+			AND M1.JIGYOSKB = #{jigyoKbn}
+		</if>
+		<choose>
+			<when test="catgFrom != '' and catgTo != ''">
+				AND M1.DAIBUNCD <![CDATA[ >= ]]> #{catgFrom}
+				AND M1.DAIBUNCD <![CDATA[ <= ]]> #{catgTo}
+			</when>
+			<when test='catgFrom != "" and catgTo == ""'>
+				AND M1.DAIBUNCD = #{catgFrom}
+			</when>
+			<when test='catgFrom == "" and catgTo != ""'>
+				AND M1.DAIBUNCD = #{catgTo}
+			</when>
+		</choose>
+		<choose>
+			<when test="shinCdFrom != '' and shinCdTo != ''">
+				AND M1.CQSHINCD <![CDATA[ >= ]]> #{shinCdFrom}
+				AND M1.CQSHINCD <![CDATA[ <= ]]> #{shinCdTo}
+			</when>
+			<when test='shinCdFrom != "" and shinCdTo == ""'>
+				AND M1.CQSHINCD = #{shinCdFrom}
+			</when>
+			<when test='shinCdFrom == "" and shinCdTo != ""'>
+				AND M1.CQSHINCD = #{shinCdTo}
+			</when>
+		</choose>
+		<choose>
+			<when test="insDayFrom != '' and insDayTo != ''">
+				AND CONVERT(varchar (8), M1.SKSI_NCHJ, 112) <![CDATA[ >= ]]> #{insDayFrom}
+				AND CONVERT(varchar (8), M1.SKSI_NCHJ, 112) <![CDATA[ <= ]]> #{insDayTo}
+			</when>
+			<when test='insDayFrom != "" and insDayTo == ""'>
+				AND CONVERT(varchar (8), M1.SKSI_NCHJ, 112) = #{insDayFrom}
+			</when>
+			<when test='insDayFrom == "" and insDayTo != ""'>
+				AND CONVERT(varchar (8), M1.SKSI_NCHJ, 112) = #{insDayTo}
+			</when>
+		</choose>
+		<choose>
+			<when test="insUserFrom != '' and insUserTo != ''">
+				AND M1.SKSI_USR <![CDATA[ >= ]]> #{insUserFrom}
+				AND M1.SKSI_USR <![CDATA[ <= ]]> #{insUserTo}
+			</when>
+			<when test='insUserFrom != "" and insUserTo == ""'>
+				AND M1.SKSI_USR = #{insUserFrom}
+			</when>
+			<when test='insUserFrom == "" and insUserTo != ""'>
+				AND M1.SKSI_USR = #{insUserTo}
+			</when>
+		</choose>
+	</sql>
+</mapper>

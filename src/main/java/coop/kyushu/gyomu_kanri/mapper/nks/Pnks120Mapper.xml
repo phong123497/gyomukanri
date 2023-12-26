@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS120
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks120Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/02 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】各種データ出力マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks120Mapper">
+
+	<!-- 加工指示データを取得する -->
+	<select id="getCntrKakoShijiDataByPnks120" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks120CntrKakoShijiEntity">
+		SELECT
+			'加工' 										AS 'shubt'
+			, JUCUYMD									AS 'juchuDay'
+			, NOHINYMD									AS 'scDelvDay'
+			, KYSHINCD									AS 'kydKonyShinCd'
+			, SUBSTRING(HAITATUYMT, 1, 4)				AS 'haitatProjTimesYear'
+			, CAST(SUBSTRING(HAITATUYMT, 5, 2) AS INT)	AS 'haitatProjTimesMonth'
+			, SUBSTRING(HAITATUYMT, 7, 1)				AS 'haitatProjTimesTimes'
+			, SYUHINNM									AS 'collectKbn'
+			, NOHINK									AS 'delvForm'
+			, MAKERCD									AS 'makerCd'
+			, HACUSKNM									AS 'hacchuskNm'
+			, CQSHINCD									AS 'cpkyushuShinCd'
+			, SHINKJ									AS 'shinNm'
+			, KIKAKKN									AS 'stddNmKn'
+			, CAST(BATCHGRPNO AS INT)					AS 'batchNo'
+			, SURYO										AS 'su'
+			, YOBISU									AS 'sprSu'
+			, '0' 										AS 'line'
+			, '0' 										AS 'zone'
+			, '0' 										AS 'addrs'
+		FROM
+			[nosan].NSTF030
+		WHERE
+			CNTJIGCD = #{cntr}
+			<if test="juchuDayStart != ''">
+				AND JUCUYMD <![CDATA[ >= ]]> #{juchuDayStart}
+			</if>
+			<if test="juchuDayEnd != ''">
+				AND JUCUYMD <![CDATA[ <= ]]> #{juchuDayEnd}
+			</if>
+			<if test="scDelvDayStart != ''">
+				AND NOHINYMD <![CDATA[ >= ]]> #{scDelvDayStart}
+			</if>
+			<if test="scDelvDayEnd != ''">
+				AND NOHINYMD <![CDATA[ <= ]]> #{scDelvDayEnd}
+			</if>
+			AND	DEL_FLG = '0'
+		ORDER BY
+			JUCUYMD
+			, NOHINYMD
+			, KYSHINCD
+			, BATCHGRPNO
+	</select>
+	
+	<!-- 引渡指示データを取得する -->
+	<select id="getCntrHikiwtsShijiDataByPnks120" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks120CntrHikiwtsSEntity">
+		SELECT
+			'引渡'										AS 'shubt'
+			, JUCUYMD									AS 'juchuDay'
+			, NOHINYMD									AS 'scDelvDay'
+			, KYSHINCD									AS 'kydKonyShinCd'
+			, SUBSTRING(HAITATUYMT, 1, 4)				AS 'haitatProjTimesYear'
+			, CAST(SUBSTRING(HAITATUYMT, 5, 2) AS INT)	AS 'haitatProjTimesMonth'
+			, SUBSTRING(HAITATUYMT, 7, 1)				AS 'haitatProjTimesTimes'
+			, SYUHINNM									AS 'collectKbn'
+			, NOHINK									AS 'delvForm'
+			, MAKERCD									AS 'makerCd'
+			, HACUSKNM									AS 'hachuskNm'
+			, CQSHINCD									AS 'cpkyushuShinCd'
+			, SHINKJ									AS 'shinNm'
+			, KIKAKKN									AS 'stddNmKn'
+			, CAST(BATCHGRPNO AS INT)					AS 'batchNo'
+			, SURYO										AS 'su'
+			, YOBISU									AS 'sprSu'
+			, CAST(LINE AS INT)							AS 'line'
+			, CAST(ZONE AS INT)							AS 'zone'
+			, CAST(ADDRESS AS INT)						AS 'addrs'
+		FROM		
+			[nosan].NSTF040
+		WHERE
+			CNTJIGCD = #{cntr}
+			<if test="juchuDayStart != ''">
+				AND JUCUYMD <![CDATA[ >= ]]> #{juchuDayStart}
+			</if>
+			<if test="juchuDayEnd != ''">
+				AND JUCUYMD <![CDATA[ <= ]]> #{juchuDayEnd}
+			</if>
+			<if test="scDelvDayStart != ''">
+				AND NOHINYMD <![CDATA[ >= ]]> #{scDelvDayStart}
+			</if>
+			<if test="scDelvDayEnd != ''">
+				AND NOHINYMD <![CDATA[ <= ]]> #{scDelvDayEnd}
+			</if>
+			AND	DEL_FLG = '0'
+		ORDER BY
+			JUCUYMD
+			, NOHINYMD
+			, KYSHINCD
+			, BATCHGRPNO;
+	</select>
+	
+	<!-- 仕入計上データを取得する -->
+	<select id="getCntrSireKeijoDataByPnks120" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks120CntrSireKeijEntity">
+		SELECT
+			CAST(CQDENPNO AS INT)				AS 'cpkyushuDenpyoNo'
+			, HATUGYONO							AS 'hachuDenpyoGyoNo'
+			, DATAYMD							AS 'dataCreYearMonthDay'
+			, HATUYMD							AS 'hachuYearMonthDay'
+			, NOHINYMD							AS 'nonyuSiteiYearMonthDay'
+			, SEICD								AS 'hachuSeikyCd'
+			, SEIKJNM							AS 'hachuSeikyNmKn'
+			, TSBCD								AS 'hachuJigyoCd'
+			, TSBKJRM							AS 'hachuJigyoNmKn'
+			, HATUCD							AS 'toriskCd'
+			, TORIKJNM							AS 'toriskNmKn'
+			, CQKIKANO							AS 'cqProjNo'
+			, KYSHINCD							AS 'kydKonyShinCd'
+			, CQSHINCD							AS 'cpkyushuShinCd'
+			, JANCD								AS 'janCd'
+			, SHINKJ							AS 'shinNmKnji'
+			, KIKAKKN							AS 'stddNmKn'
+			, MAKERCD							AS 'makerCd'
+			, MAKERKJ							AS 'makerNmKnji'
+			, TELNO								AS 'makerTel'
+			, FAXNO								AS 'makerFax'
+			, SANTIKJ							AS 'santiNm'
+			, TOKAIKYUKJ						AS 'touClass'
+			, SHIZAIKJ							AS 'shizaikj'
+			, SYUHINNM							AS 'collectKbnNm'
+			, NOHINK							AS 'delvForm'
+			, SURYO								AS 'su'
+			, GENTAN							AS 'cpkyushuSireGentan'
+			, GENRYTAN							AS 'genryoTan'
+			, KAKOTAN							AS 'kakoTan'
+			, SHIZTAN							AS 'shizaiTan'
+			, ITAKUTAN							AS 'itakuTan'
+			, SIREGAKU							AS 'cpkyushuSireGaku'
+			, GENRYGAKU							AS 'genryoGaku'
+			, KAKOGAKU							AS 'kakoGaku'
+			, SHIZGAKU							AS 'shizaiGaku'
+			, ITAKUGAKU							AS 'itakuGaku'
+			, CAST(ZEIRITU AS INT)				AS 'zeiritu'
+		FROM
+			[nosan].NSTF050
+		WHERE
+			CNTJIGCD = #{cntr}
+			<if test="nonyuSiteiYearMonthDayStart != ''">
+				AND NOHINYMD <![CDATA[ >= ]]> #{nonyuSiteiYearMonthDayStart}
+			</if>
+			<if test="nonyuSiteiYearMonthDayEnd != ''">
+				AND NOHINYMD <![CDATA[ <= ]]> #{nonyuSiteiYearMonthDayEnd}
+			</if>
+			AND DEL_FLG = '0'
+		ORDER BY
+			CQDENPNO
+			, HATUGYONO
+	</select>
+
+</mapper>

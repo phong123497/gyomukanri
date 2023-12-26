@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS110
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks110Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/08/03 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】調達加工計画書印刷 -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks110Mapper">
+	<!-- 調達加工計画存在チェック -->
+	<select id="getTyotatsuKakoPlanByPnks110" parameterType="Map" resultType="int">
+		SELECT
+			COUNT(*) 
+		FROM
+			[nosan].NSTF010 
+		WHERE
+			HAITATUYMT = convert(varchar(4),#{haitatuY}) + convert(varchar(2),#{haitatuM}) + convert(varchar(1),#{haitatTimes})
+			<if test="cntr != null and cntr != ''">
+				AND CNTJIGCD = #{cntr}
+			</if>
+	</select>
+</mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS050
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks050Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/26 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】価格表印刷マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks050Mapper">
+
+	<!-- 農産企画商品情報マスタ情報取得 -->
+	<select id="getCommodityInfoByPnks050" parameterType="Map" resultType="Integer">
+		SELECT
+			COUNT(ID)
+			
+		FROM
+			[nosan].NSMN020 A
+		WHERE 
+			CQKIKANO  = #{projNo}
+		AND A.DEL_FLG = '0'
+	</select>
+	<!-- 価格表印刷用のデータ取得 -->
+	<select id="getPrintInfoByPnks05001" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks05001ListItem">
+		SELECT
+			  SUBSTRING(MAX(NSMN010.SEKIKANO), 1, 4) AS 'sekikanoY'	
+			, SUBSTRING(MAX(NSMN010.SEKIKANO), 5, 2) AS 'sekikanoM'		
+			, SUBSTRING(MAX(NSMN010.SEKIKANO), 7, 1) AS 'sekikanoT'	
+			, NSMM020.ZOK01     AS 'bumonCd'	
+			, MAX(NSMM020.KJNM) AS 'bumonkj'	
+			, NSMN020.CQKIKANO	
+			, MIN(ISNULL(NULLIF(RTRIM(SEI.ZOK01),''), SEI.MEICD)) AS 'seicd'	
+			, NSMN020.KYSHINCD	AS 'kyshinCd'
+			, MAX(NSMN010.CQSHINCD) AS 'cqshinCd'	
+			, MAX(NSMN010.JANCD)    AS  'janCd'	
+			, MAX(NSMN010.KIKAKKJ)  AS  'kikakkj'	
+			, MAX(NSMN010.SHINKJ)   AS  'shinkj'	
+			, MAX(NSMN020.KAKOKBN)  AS  'kakoKbn'	
+			, CASE WHEN MAX(NSMN020.GENTAN)=0 THEN NULL ELSE MAX(NSMN020.GENTAN) END      AS 'gentan'
+			, CASE WHEN MAX(NSMN020.BAITAN)=0 THEN  NULL ELSE MAX(NSMN020.BAITAN) END     AS 'baitan'	
+			, CASE WHEN MAX(NSMN010.ZENUKUMI)=0 THEN  NULL ELSE MAX(NSMN010.ZENUKUMI) END AS 'zenukumi'	
+			, CASE WHEN MAX(NSMN010.KUMITAN)=0 THEN  NULL ELSE MAX(NSMN010.KUMITAN) END   AS 'kumitan'	
+			, CASE WHEN MAX(NSMN010.ZENUKUMI)=0 THEN  NULL ELSE (MAX(NSMN010.ZENUKUMI)-MAX(NSMN020.BAITAN))/ MAX(NSMN010.ZENUKUMI) END AS 'gpr'
+			, SUBSTRING(MIN(KIKAKB.KJRM),1,1) AS 'kikakb'	
+			, NSMN020.MAKERCD	    AS 'makerCd'
+			, MAX(NSMM060.MAKERKJ)  AS 'makerkj'	
+			, MAX(NSMN010.SYUHINKB) AS 'syuhinkb'	
+			, NSMN020.SANTICD	    AS 'santiCd'
+			, MAX(NSMT020.SANTIKJ)  AS 'santikj'	
+			, MAX(NSMN010.IRISU)    AS 'irisu'	
+			, CASE WHEN SUM(CASE  WHEN  NSMN020.SEICD = '8792'  THEN  1  ELSE  0 END)=0 THEN '0'ELSE '1' END AS 'ehu'
+			, CASE WHEN SUM(CASE  WHEN  NSMN020.SEICD = '9119'  THEN  1  ELSE  0 END)=0 THEN '0'ELSE '1' END AS 'saga'
+			, CASE WHEN SUM(CASE  WHEN  NSMN020.SEICD = '9232'  THEN  1  ELSE  0 END)=0 THEN '0'ELSE '1' END AS 'rara'
+			, CASE WHEN SUM(CASE  WHEN  NSMN020.SEICD = '9621'  THEN  1  ELSE  0 END)=0 THEN '0'ELSE '1' END AS 'oita'
+			, CASE WHEN SUM(CASE  WHEN  NSMN020.SEICD = '9461'  THEN  1  ELSE  0 END)=0 THEN '0'ELSE '1' END AS 'suikosya'
+			, CASE WHEN SUM(CASE  WHEN  NSMN020.SEICD = '9720'  THEN  1  ELSE  0 END)=0 THEN '0'ELSE '1' END AS 'miyazaki'
+			, CASE WHEN SUM(CASE  WHEN  NSMN020.SEICD = '9829'  THEN  1  ELSE  0 END)=0 THEN '0'ELSE '1' END AS 'kagosima'
+			, CASE WHEN SUM(CASE  WHEN  NSMN020.SEICD = '9959'  THEN  1  ELSE  0 END)=0 THEN '0'ELSE '1' END AS 'okinawa'
+			, #{tankflg} AS 'tankflg'
+			, MAX(ERR.KJRM)  AS 'biko'	
+		FROM
+		    [nosan].NSMN010 
+		    INNER JOIN [nosan].NSMN020 
+		        ON NSMN010.KYSHINCD = NSMN020.KYSHINCD 
+		        AND NSMN010.CQKIKANO = NSMN020.CQKIKANO 
+		    INNER JOIN [nosan].NSMM020 SEI 
+		        ON SEI.RECKB = '12' 
+		        AND NSMN020.SEICD = SEI.MEICD 
+		    LEFT JOIN [nosan].NSMM020 KIKAKB 
+		        ON KIKAKB.RECKB = '10' 
+		        AND NSMN020.KIKAKB = KIKAKB.MEICD 
+		    LEFT JOIN [nosan].NSMM060 
+		        ON NSMN020.MAKERCD = NSMM060.MAKERCD 
+		    LEFT JOIN ( 
+		        SELECT
+		            NSMM021.MEICD
+		            , NSMM021.ZOK01
+		            , NSMM021.KJNM 
+		        FROM
+		            [nosan].NSMM020 NSMM021 
+		            INNER JOIN [nosan].NSMM020 NSMM022 
+		                ON RTRIM(NSMM021.ZOK01) = RTRIM(NSMM022.MEICD) 
+		                AND NSMM022.RECKB = '11' 
+		        WHERE
+		            NSMM021.RECKB = '18'
+		    ) NSMM020 
+		        ON NSMM020.MEICD = NSMN010.TYUBNCD 
+		    LEFT JOIN [nosan].NSMT020 NSMT020 
+		        ON NSMT020.SANTICD = NSMN020.SANTICD 
+		        AND NSMT020.MAKERCD = NSMN020.MAKERCD 
+		        AND NSMT020.KYSHINCD = NSMN020.KYSHINCD 
+		    LEFT JOIN [nosan].NSMM020 ERR 
+		        ON ERR.RECKB = '90' 
+		        AND NSMN010.ERR_CD = ERR.MEICD 
+		WHERE
+		    NSMN020.CQKIKANO = #{projNo} 
+		    AND NSMN010.DEL_FLG = '0' 
+		    AND NSMN020.DEL_FLG = '0' 
+		GROUP BY
+		    NSMN020.CQKIKANO
+		    , NSMM020.ZOK01
+		    , NSMN020.KYSHINCD
+		    , NSMN020.MAKERCD
+		    , NSMN020.SANTICD
+		
+	</select>
+</mapper>

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PEXT020
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pext020
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2022/11/28 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+
+<!-- 仕入訂正入力マッパークラス -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.ext.Pext020Mapper">
+
+	<!-- 店舗発注累積ファイル伝票ヘッダ情報を取得 -->
+	<select id="getDempyoHead" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.ext.Pext020Entity">
+		SELECT
+				KSEICD
+			,	KSEINMA		AS JIGYONM
+			,	TENCD
+			,	TENNMA		AS TENNM
+			,	HATNMA
+			,	SIRCD		AS TORISKCD
+			,	SIRNMA		AS TORISKNM
+			,	KBUNRUI		AS CATGCD
+			,	KDENKBN		AS TORIKBN
+			,	CBUNRUI
+			,	TTENCD		AS TUKADELVPLACECD
+			,	TTENNMA		AS TUKADELVPLACENM
+			,	TORIKBN
+			,	DENHKKBN	AS DEMPYOISSKBN
+			,	KHADATE		AS HACHUDAY
+			,	NODATE
+			,	TESIKB		AS TEISEIKBN
+			,	DENNO
+			,	DENHKKBN
+			,	MESSAGE
+			,	JNODATE		AS JITDELVDAY
+			,	TAX			AS ZEIRATE
+		FROM
+				[proto].EXTDTRUI 
+		WHERE
+					KSEICD	= #{jigyoCd}
+			AND		TENCD	= #{tenCd}
+			AND		HTKBN	= 1
+			AND		DENNO	= #{dempyoNo}
+			AND		SIRCD	= #{toriskCd}
+			AND		NODATE	= #{delvDay}
+			AND		KBUNRUI	= #{catgCd}
+			AND		KDENKBN	= #{toriKbn}
+			AND		GYONO	= 1
+		ORDER BY
+				KSEICD
+			,	TENCD
+			,	HTKBN
+			,	NODATE
+			,	DENNO
+			,	GYONO
+	</select>
+
+	<!-- 店舗発注累積ファイル伝票明細情報を取得 -->
+	<select id="getDempyo" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.ext.Pext020ListItem">
+		SELECT	
+				TRUI.GYONO		AS NO
+			,	TRUI.HINCD		AS JANSHINCD
+			,	TRUI.CHINCD		AS SHINCD
+			,	TRUI.HINNA		AS SHINNM
+			,	SHINM.KIKAKN	AS KIKAKU
+			,	TRUI.IRISU		AS IRISU
+			,	TRUI.PSSU		AS SURYO
+			,	TRUI.GTANKA		AS GENKATANKA
+			,	TRUI.UTANKA		AS URITANKA
+			,	TRUI.CSIRTAN	AS SIRETAN
+			,	TRUI.GKINGAKU	AS GENKAGAKU
+			,	TRUI.UKINGAKU	AS BAIKAGAKU
+			,	TRUI.CSIRKIN	AS SIREGAKU
+			,	TRUI.TAX		AS ZEIRATE
+		FROM	
+				[proto].EXTDTRUI TRUI
+		LEFT JOIN	[proto].MSTSHINM SHINM
+			ON		TRUI.HINCD = SHINM.CQSHINCD
+		WHERE	
+					TRUI.KSEICD	= #{jigyoCd}
+			AND		TRUI.TENCD	= #{tenCd}
+			AND		TRUI.HTKBN	= 1
+			AND		TRUI.DENNO	= #{dempyoNo}
+			AND		TRUI.SIRCD	= #{toriskCd}
+			AND		TRUI.NODATE	= #{delvDay}
+		ORDER BY	
+				TRUI.KSEICD
+			,	TRUI.TENCD
+			,	TRUI.HTKBN
+			,	TRUI.NODATE
+			,	TRUI.DENNO
+			,	TRUI.GYONO
+	</select>
+	<select id="getTorihikisaki" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.ext.Pext020TorihikisakiItem">
+		SELECT
+			toricd
+			,torikjnm
+			,toriknnm as toriskNm
+			,gensirkb
+			,toritskb
+		FROM
+			[proto].MSTTORIM
+		WHERE
+			toricd=#{toricd}
+			and delflg = 0
+	</select>
+	<select id="getJigyosho" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.ext.Pext020JigyoshoItem">
+		SELECT
+		    seiknnm as seikyNm
+		    , tsbknrm as jigyoNm
+		FROM
+    		[proto].MSTKSEIM 
+		WHERE
+		    seicd = #{jigyoCd}
+		    and tsbcd = #{tenCd}
+		    and delflg = 0
+	</select>
+	<select id="getShohinSingle" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.ext.Pext020Items">
+		SELECT
+			cqshincd
+			,shinkn
+			,shinkj
+			,kikakn
+			,gentan1 as gentan
+			,baitan1 as baitan
+			,nyuirisu
+		FROM
+			[proto].MSTSHINM
+		WHERE
+			cqshincd=#{cqshincd}
+			and delflg = 0
+	</select>
+	<insert id="insertDempyo" parameterType="Map">
+		INSERT INTO
+		[proto].EXTDTRUI
+			(
+				kseicd
+				,tencd
+				,htkbn
+				,denno
+				,sircd
+				,nodate
+				,gyono
+				,kbunrui
+				,cbunrui
+				,kdenkbn
+				,khadate
+				,jhkbn
+				,skcd
+				,jdate
+				,ktoricd
+				,ctoricd
+				,kseinma
+				,tennma
+				,hatnma
+				,sirnma
+				,sknma
+				,ttencd
+				,ttennma
+				,jankik
+				,rootkbn
+				,catno
+				,hincd
+				,khincd
+				,tanaban
+				,chincd
+				,hinna
+				,irisu
+				,hcssu
+				,bandoru
+				,pssu
+				,tpssu
+				,gtanka
+				,utanka
+				,csirtan
+				,gkingaku
+				,ukingaku
+				,csirkin
+				,sihsaito
+				,nyusaito
+				,taxkbn
+				,tax
+				,turnkbn
+				,odenno
+				,hatkbn
+				,takukbn
+				,gyoerr
+				,torerr
+				,hinerr
+				,tanerr
+				,rdterr
+				,denerr
+				,irierr
+				,toserr
+				,staerr
+				,ehtflg
+				,esyflg
+				,kyodate
+				,sirdate
+				,hatform
+				,gupflg
+				,hatuno
+				,jgykbn
+				,sosincd
+				,message
+				,syudate
+				,nkakflg
+				,hsouflg
+				,hdenflg
+				,sccd
+				,fcpkbn
+				,nouzkbn
+				,oflinkb
+				,tesikb
+				,tokbaikb
+				,qrctukkb
+				,[update]
+				,torikbn
+				,sosin
+				,denhkkbn
+				,jtyouaicd
+				,jjigyoscd
+				,jtyouaikj
+				,hkseikj
+				,hjgyoskj
+				,njgyoscd
+				,hikanrkb
+				,shinkj
+				,ukegnisu
+				,cskb
+				,ukgszymd
+				,ukgsyymd
+				,brkkbn
+				,syukhflg
+				,jnodate
+				,brnsgkbn
+				,sksi_usr
+				,sksi_prgrm
+				,kushn_usr
+				,kushn_prgrm
+			)
+	VALUES(
+			#{kseicd}
+			,#{tencd}
+			,#{htkbn}
+			,#{denno}
+			,#{sircd}
+			,#{nodate}
+			,#{gyono}
+			,#{kbunrui}
+			,#{cbunrui}
+			,#{kdenkbn}
+			,#{khadate}
+			,#{jhkbn}
+			,#{skcd}
+			,#{jdate}
+			,#{ktoricd}
+			,#{ctoricd}
+			,#{kseinma}
+			,#{tennma}
+			,#{hatnma}
+			,#{sirnma}
+			,#{sknma}
+			,#{ttencd}
+			,#{ttennma}
+			,#{jankik}
+			,#{rootkbn}
+			,#{catno}
+			,#{hincd}
+			,#{khincd}
+			,#{tanaban}
+			,#{chincd}
+			,#{hinna}
+			,#{irisu}
+			,#{hcssu}
+			,#{bandoru}
+			,#{pssu}
+			,#{tpssu}
+			,#{gtanka}
+			,#{utanka}
+			,#{csirtan}
+			,#{gkingaku}
+			,#{ukingaku}
+			,#{csirkin}
+			,#{sihsaito}
+			,#{nyusaito}
+			,#{taxkbn}
+			,#{tax}
+			,#{turnkbn}
+			,#{odenno}
+			,#{hatkbn}
+			,#{takukbn}
+			,#{gyoerr}
+			,#{torerr}
+			,#{hinerr}
+			,#{tanerr}
+			,#{rdterr}
+			,#{denerr}
+			,#{irierr}
+			,#{toserr}
+			,#{staerr}
+			,#{ehtflg}
+			,#{esyflg}
+			,#{kyodate}
+			,#{sirdate}
+			,#{hatform}
+			,#{gupflg}
+			,#{hatuno}
+			,#{jgykbn}
+			,#{sosincd}
+			,#{message}
+			,#{syudate}
+			,#{nkakflg}
+			,#{hsouflg}
+			,#{hdenflg}
+			,#{sccd}
+			,#{fcpkbn}
+			,#{nouzkbn}
+			,#{oflinkb}
+			,#{tesikb}
+			,#{tokbaikb}
+			,#{qrctukkb}
+			,#{update}
+			,#{torikbn}
+			,#{sosin}
+			,#{denhkkbn}
+			,#{jtyouaicd}
+			,#{jjigyoscd}
+			,#{jtyouaikj}
+			,#{hkseikj}
+			,#{hjgyoskj}
+			,#{njgyoscd}
+			,#{hikanrkb}
+			,#{shinkj}
+			,#{ukegnisu}
+			,#{cskb}
+			,#{ukgszymd}
+			,#{ukgsyymd}
+			,#{brkkbn}
+			,#{syukhflg}
+			,#{jnodate}
+			,#{brnsgkbn}
+			,#{sksi_usr}
+			,#{sksi_prgrm}
+			,#{kushn_usr}
+			,#{kushn_prgrm}
+		)
+	</insert>
+		<delete id="deleteDempyo" parameterType="Map">
+			DELETE 
+			FROM
+    			[proto].EXTDTRUI 
+			WHERE
+   				kseicd = #{jigyoCd}
+		    and tencd = #{tenCd}
+		    and htkbn = 1
+		    and denno = #{dempyoNo}
+		    and sircd = #{toriskCd}
+		    and nodate = #{delvDay}
+		</delete>
+	
+
+</mapper>

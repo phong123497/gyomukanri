@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PMSK050
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pmsk050
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/09/25 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+
+<!-- 【マスタ】取引先マスタ一覧マッパークラス -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.msk.Pmsk050Mapper">
+  <!-- 取引先マスタ件数取得 -->
+  <select id="getCountByPmsk050" parameterType="Map" resultType="int">
+    SELECT 
+      COUNT(*)
+    FROM 
+      [gyomu].MSTTORIM AS T1
+    <where>
+      T1.DELFLG = 0
+      <if test="toricdStart != null and toricdStart != ''">
+        AND T1.TORICD <![CDATA[ >= ]]> #{toricdStart}
+      </if>
+      <if test="toricdEnd != null and toricdEnd != ''">
+        AND T1.TORICD <![CDATA[ <= ]]> #{toricdEnd}
+      </if>
+      <if test="torikjnm != null and torikjnm != ''">
+        AND T1.TORIKJNM LIKE CONCAT('%', #{torikjnm}, '%')
+      </if>
+      <if test="toriknnm != null and toriknnm != ''">
+        AND T1.TORIKNNM LIKE CONCAT('%', #{toriknnm}, '%')
+      </if>
+      <if test="hatukb != null and hatukb != ''">
+        AND T1.WEBEDI_HATUKB = #{hatukb}
+      </if>
+      <if test="hatufmkb != null and hatufmkb != ''">
+        AND T1.WEBEDI_HATUFMKB = #{hatufmkb}
+      </if>
+      <if test="sosncd != null and sosncd != ''">
+        AND T1.WEBEDI_SOSNCD = #{sosncd}
+      </if>
+    </where> 
+  </select>
+
+  <!-- 取引先マスタ一覧取得 -->
+  <select id="getTorihikisakiListByPmsk050" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.msk.Pmsk050ListItem">
+    SELECT 
+      T1.TORICD AS toricd
+      , T1.TORIKJNM AS torikjnm
+      , T1.TORIKNNM AS toriknnm
+      , T1.TEL AS tel
+      , T1.FAX AS fax
+      , T1.WEBEDI_HATUKB AS hatukb
+      , T1.TOSU_HATUKB AS hatukbY
+      , T1.WEBEDI_HATUFMKB AS hatufmkb
+      , T1.TOSU_HATUFMKB AS hatufmkbY
+      , T1.WEBEDI_SOSNCD AS sosncd
+      , T1.TOSU_SOSNCD AS sosncdY
+      , T1.SIKJDAYF AS tekiymd
+    FROM 
+      [gyomu].MSTTORIM AS T1
+    <where>
+      T1.DELFLG = 0
+      <if test="toricdStart != null and toricdStart != ''">
+        AND T1.TORICD <![CDATA[ >= ]]> #{toricdStart}
+      </if>
+      <if test="toricdEnd != null and toricdEnd != ''">
+        AND T1.TORICD <![CDATA[ <= ]]> #{toricdEnd}
+      </if>
+      <if test="torikjnm != null and torikjnm != ''">
+        AND T1.TORIKJNM LIKE CONCAT('%', #{torikjnm}, '%')
+      </if>
+      <if test="toriknnm != null and toriknnm != ''">
+        AND T1.TORIKNNM LIKE CONCAT('%', #{toriknnm}, '%')
+      </if>
+      <if test="hatukb != null and hatukb != ''">
+        AND T1.WEBEDI_HATUKB = #{hatukb}
+      </if>
+      <if test="hatufmkb != null and hatufmkb != ''">
+        AND T1.WEBEDI_HATUFMKB = #{hatufmkb}
+      </if>
+      <if test="sosncd != null and sosncd != ''">
+        AND T1.WEBEDI_SOSNCD = #{sosncd}
+      </if>
+    </where> 
+    ORDER BY
+      T1.TORICD
+  </select>
+
+  <!-- CSV出力情報取得 -->
+  <select id="getCsvDataByPmsk050" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.msk.Pmsk050CsvExportItem">
+    SELECT 
+      T1.TORICD AS toricd
+      , T1.TORIKJNM AS torikjnm
+      , T1.TORIKJNM AS toriknnm
+      , T1.TORIKJRM AS torikjrm
+      , T1.TORIKNRM AS toriknrm
+      , T1.YUBIN AS yubin
+      , T1.YUBINNO AS yubinno
+      , T1.JUSYO1 AS jusyo1
+      , T1.JUSYO2 AS jusyo2
+      , T1.JUSYO3 AS jusyo3
+      , T1.TEL AS tel
+      , T1.TELNO AS telno
+      , T1.FAX AS fax
+      , T1.FAXNO AS faxno
+      , T1.TORISTB AS toristb
+      , T1.SIHASDAY AS sihasday
+      , T1.SIHAGESU AS sihagesu
+      , T1.SIHADAY AS sihaday
+      , T1.SEKYSDAY AS sekysday
+      , T1.SEKYGESU AS sekygesu
+      , T1.SEKYDAY AS sekyday
+      , T1.CENTFEE_RT AS centfee_rt
+      , T1.CENTFEE_RZ AS centfee_rz
+      , T1.CENTFEE_DR AS centfee_dr
+      , T1.EDI_DENHATKB AS edi_denhatkb
+      , T1.EDI_SSOSINKB AS edi_ssosinkb
+      , T1.EDI_GLN AS edi_gln
+      , T1.EDI_STRDATE AS edi_strdate
+      , T1.EDI_ENDDATE AS edi_enddate
+      , T1.TEN_MEIKB AS ten_meikb
+      , T1.GENSIRKB AS gensirkb
+      , T1.WEBEDI_HATUKB AS webedi_hatukb
+      , T1.WEBEDI_HATUFMKB AS webedi_hatufmkb
+      , T1.WEBEDI_SOSNCD AS webedi_sosncd
+      , T1.WEBEDI_SYUKHFLG AS webedi_syukhflg
+      , T1.TOSU_HATUKB AS tosu_hatukb
+      , T1.TOSU_HATUFMKB AS tosu_hatufmkb
+      , T1.TOSU_SOSNCD AS tosu_sosncd
+      , T1.TOSU_SYUKHFLG AS tosu_syukhflg
+      , T1.SIKJDAYF AS sikjdayf
+      , T1.SIRJKTKB AS sirjktkb
+      , T1.SEKKSSKB AS sekksskb
+      , T1.ESOKKB AS esokkb
+      , T1.SKSIJIKB AS sksijikb
+      , T1.SAIHATKB AS saihatkb
+      , T1.TORITSKB AS toritskb 
+    FROM
+      [gyomu].MSTTORIM AS T1
+    <where>
+      T1.DELFLG = 0
+      <if test="toricdStart != null and toricdStart != ''">
+        AND T1.TORICD <![CDATA[ >= ]]> #{toricdStart}
+      </if>
+      <if test="toricdEnd != null and toricdEnd != ''">
+        AND T1.TORICD <![CDATA[ <= ]]> #{toricdEnd}
+      </if>
+      <if test="torikjnm != null and torikjnm != ''">
+        AND T1.TORIKJNM LIKE CONCAT('%', #{torikjnm}, '%')
+      </if>
+      <if test="toriknnm != null and toriknnm != ''">
+        AND T1.TORIKNNMLIKE CONCAT('%', #{toriknnm}, '%')
+      </if>
+      <if test="hatukb != null and hatukb != ''">
+        AND T1.WEBEDI_HATUKB = #{hatukb}
+      </if>
+      <if test="hatufmkb != null and hatufmkb != ''">
+        AND T1.WEBEDI_HATUFMKB = #{hatufmkb}
+      </if>
+      <if test="sosncd != null and sosncd != ''">
+        AND T1.WEBEDI_SOSNCD = #{sosncd}
+      </if>
+    </where>  
+    ORDER BY
+      T1.TORICD 
+  </select>  
+</mapper>

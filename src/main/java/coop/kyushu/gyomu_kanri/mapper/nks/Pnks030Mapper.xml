@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS030
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks030Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/10 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+
+<!-- 【農産企画支援】農産企画情報入力マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks030Mapper">
+	<!-- 企画番号と共同購入商品コードより、農産企画商品マスタを取得する。 -->
+	<select id="getNousanProjinShinByPnks030" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks030Entity">
+		SELECT
+		    CQKIKANO
+		    , KYSHINCD AS KYDKONYSHINCD
+		    , SHINKJ AS SHINNM
+		    , KIKAKKJ AS STDD
+		    , YOKIKBN AS DELVJIYOKIKBN
+		    , SEALKBN AS SEALPASTEUMUKBN
+		    , SHIZAIKJ AS SHIZAINM
+		    , BUMONCD AS BUMONCD
+		    , KINSOKUCHKKB AS KINSOKUCHKKBN
+		    , TANKKEIKB AS TANANOCALCKBN
+		    , ZEINKKEIKB AS ZEINUKICALCKBN
+		    , ZEIKMKEIKB AS ZEIKOMICALCKBN
+		    , ZEIRITU AS SHOHZIRATE
+		FROM
+		    [nosan].NSMN010
+		WHERE
+		    CQKIKANO = #{cqkikano}
+		    AND KYSHINCD = #{kyshincd}
+		    AND DEL_FLG = 0
+	</select>
+	<!-- 企画番号と共同購入商品コードより、農産企画商品情報マスタを取得する。 -->
+	<select id="getNousanProjinShinInfoForHeaderByPnks030" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks030TotalItem">
+		SELECT
+		    NSMN010.CQKIKANO
+		    , NSMM020.BUMONCD AS BMNCD
+		    , COUNT(NSMN010.KYSHINCD) AS SKU
+		    , SUM(NSMN020S.KEIKAKSU) AS PLANPOINT
+		    , SUM(NSMN020S.CQGEN) AS GENTAN
+		    , SUM(NSMN020S.CQBAI) AS BAITAN
+		    , SUM(NSMN010.ZENUKUMI * NSMN020S.KEIKAKSU) AS FCPSUPLYGAKU
+		FROM
+		    [nosan].NSMN010 
+		    INNER JOIN ( 
+		        SELECT
+		            NSMN020.CQKIKANO
+		            , NSMN020.KYSHINCD
+		            , SUM(NSMN020.KEIKAKSU) AS KEIKAKSU
+		            , SUM(NSMN020.KEIKAKSU * NSMN020.GENTAN) AS CQGEN
+		            , SUM(NSMN020.KEIKAKSU * NSMN020.BAITAN) AS CQBAI 
+		        FROM
+		            [nosan].NSMN020 NSMN020 
+		        WHERE
+		            NSMN020.SEICD = '8792'
+		            AND NSMN020.CQKIKANO = #{cqkikano}
+		            AND NSMN020.KYSHINCD &lt;&gt; #{kyshincd}
+		        GROUP BY
+		            NSMN020.CQKIKANO
+		            , NSMN020.KYSHINCD
+		    ) NSMN020S 
+		        ON NSMN010.CQKIKANO = NSMN020S.CQKIKANO 
+		        AND NSMN010.KYSHINCD = NSMN020S.KYSHINCD 
+		    INNER JOIN ( 
+		        SELECT
+		            NSMM021.MEICD
+		            , NSMM021.ZOK01 AS BUMONCD
+		            , NSMM022.KJNM 
+		        FROM
+		            [nosan].NSMM020 NSMM021
+		            LEFT JOIN [nosan].NSMM020 NSMM022 
+		                ON RTRIM(NSMM021.ZOK01) = RTRIM(NSMM022.MEICD) 
+		                AND NSMM022.RECKB = '11'
+		        WHERE
+		            NSMM021.RECKB = '18'
+		    ) NSMM020 
+		        ON NSMM020.MEICD = NSMN010.TYUBNCD 
+		WHERE
+		    NSMM020.BUMONCD IN ('01', '02')
+		GROUP BY
+		    NSMN010.CQKIKANO
+		    , NSMM020.BUMONCD
+	</select>
+	<!-- 企画番号と共同購入商品コードより、農産企画商品情報マスタを取得する。 -->
+	<select id="getNousanProjinShinInfoForIchiranByPnks030" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks030ShohinInfoItem">
+		SELECT
+		    M1.BATCHNO
+		    , M3.BATCHNO + ' ' + M3.BATCHKJ AS BATCHNM
+		    , M3.SEICD AS KAIINSEIKYCD
+		    , M1.MAKERCD AS MAKER
+		    , M4.MAKERKJ AS MAKERNM
+		    , M5.SANTICD AS SANTICD
+		    , M5.SANTIKJ AS SANTI
+		    , M6.TOKAIKYUCD AS TOUCLASSCD
+		    , M6.TOKAIKYUKJ AS TOUCLASS
+		    , M1.KAKOKBN AS KAKO
+		    , M1.KIKAKB AS TOKKA
+		    , M2.KUMITAN AS ZEIKOMIKAKAKU
+		    , M2.ZENUKUMI AS HONTAIKAKAKU
+		    , M1.GENTAN AS SHIIRETAN
+		    , M1.BAITAN AS SUPLYTAN
+		    , M1.GENRYTAN AS GENRYOTAN
+		    , M1.KAKOTAN AS KAKOTAN
+		    , M1.SHIZTAN AS SHIZAITAN
+		    , M1.ITAKUTAN AS ITAKTAN
+		    , M1.KEIKAKSU AS PLANSU
+		    , M3.KEIKAKUKEISU AS KEIKAKUKEISU
+		FROM
+		    [nosan].NSMN020 M1 
+		    INNER JOIN [nosan].NSMN010 M2 
+		        ON M1.CQKIKANO = M2.CQKIKANO 
+		        AND M1.KYSHINCD = M2.KYSHINCD 
+		    INNER JOIN [nosan].NSMM040 M3 
+		        ON M1.BATCHNO = M3.BATCHNO 
+		    LEFT JOIN [nosan].NSMM060 M4 
+		        ON M1.MAKERCD = M4.MAKERCD 
+		    LEFT JOIN [nosan].NSMT020 M5 
+		        ON M1.KYSHINCD = M5.KYSHINCD
+		        AND M1.MAKERCD = M5.MAKERCD 
+		        AND M1.SANTICD = M5.SANTICD 
+		    LEFT JOIN [nosan].NSMT030 M6 
+		        ON M1.KYSHINCD = M6.KYSHINCD
+		        AND M1.MAKERCD = M6.MAKERCD 
+		        AND M1.TOKAIKYUCD = M6.TOKAIKYUCD 
+		WHERE
+		    M1.CQKIKANO = #{cqkikano}
+		    AND M1.KYSHINCD = #{kyshincd}
+		    AND M1.DEL_FLG = 0 
+		    AND M2.DEL_FLG = 0 
+		ORDER BY
+		    M1.BATCHNO
+	</select>
+	<!-- 入力された条件に合うデータをサーバーの農産企画商品マスタから検索し表示する。 -->
+	<select id="getNousanProjinShinListByPnks030" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks030Entity">
+		 SELECT
+		    CQKIKANO AS CQKIKANO
+		    , KYSHINCD AS KYDKONYSHINCD
+		    , SHINKJ AS SHINNM
+		    , KIKAKKJ AS STDD
+		    , EHU AS FCP
+		    , SAGA AS SAG
+		    , RARA AS LALA
+		    , OITA AS OIT
+		    , SUIKOSYA AS KMT
+		    , MIYAZAKI AS MYZ
+		    , KAGOSIMA AS KAG
+		    , OKINAWA AS OKN 
+		FROM
+		    [nosan].NSMN010
+		WHERE
+		    CQKIKANO = #{cqkikano}
+			<if test="'' != kyshincdStart and '' != kyshincdEnd">
+				AND KYSHINCD &gt;= #{kyshincdStart}
+				AND KYSHINCD &lt;= #{kyshincdEnd}
+			</if>
+			<if test="'' != kyshincdEnd and '' == kyshincdStart">
+				AND KYSHINCD = #{kyshincdEnd}
+			</if>
+			<if test="'' != kyshincdStart and '' == kyshincdEnd">
+				AND KYSHINCD = #{kyshincdStart}
+			</if>
+		    AND DEL_FLG = 0 
+		ORDER BY
+		    EHU DESC
+		    , KYSHINCD ASC
+	</select>
+	<!-- 産地コンボボックスリストを取得する。 -->
+	<select id="getSantiCboxByPnks030" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.com.Nsmt020Entity">
+		SELECT
+		    SANTICD
+		    , SANTIKJ
+		FROM
+		    [nosan].NSMT020
+		WHERE
+		    KYSHINCD = #{kydKonyShinCd}
+		    AND MAKERCD = #{makerCd}
+		    AND DEL_FLG = '0'
+	</select>
+	<!-- 等階級コンボボックスリストを取得する。-->
+	<select id="getTokaikyCboxByPnks030" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.com.Nsmt030Entity">
+		SELECT
+		    TOKAIKYUKJ
+		    , TOKAIKYUCD 
+		FROM
+		    [nosan].NSMT030 
+		WHERE
+		    KYSHINCD = #{kydKonyShinCd}
+		    AND MAKERCD = #{makerCd}
+		    AND DEL_FLG = '0'
+	</select>
+	<!-- 画面項目値で農産企画商品更新ワークを削除する。-->
+	<delete id="deleteNousanProjinShinByPnks030" parameterType="Map">
+		DELETE
+			[nosan].NSWT030
+		WHERE
+			USERID = #{userid}
+	</delete>
+	<!-- 画面項目値で農産企画商品更新ワークを登録する。-->
+	<insert id="saveNousanProjinShinByPnks030" parameterType="Map">
+		INSERT 
+		INTO [nosan].NSWT030( 
+		    USERID
+		    , CQKIKANO
+		    , KYSHINCD
+		    , BATCHNO
+		    , YOKIKBN
+		    , SEALKBN
+		    , SHIZAIKJ
+		    , KIKAKB
+		    , MAKERCD
+		    , SANTICD
+		    , SANTIKJ
+		    , TOKAIKYUCD
+		    , TOKAIKYUKJ
+		    , KAKOKBN
+		    , KEIKAKSU
+		    , ZENUKUMI
+		    , KUMITAN
+		    , GENTAN
+		    , BAITAN
+		    , KAKOTAN
+		    , SHIZTAN
+		    , GENRYTAN
+		    , ITAKUTAN
+		    , DEL_FLG
+		    , SKSI_USR
+		    , SKSI_PRGRM
+		    , SKSI_NCHJ
+		    , KUSHN_USR
+		    , KUSHN_PRGRM
+		    , KUSHN_NCHJ
+		) VALUES ( 
+		    #{userid}
+		    , #{cqkikano}
+		    , #{kyshincd}
+		    , #{batchno}
+		    , #{delvJiYokiKbn}
+		    , #{sealPasteUmuKbn}
+		    , #{shizaiNm}
+		    , #{tokka}
+		    , #{maker}
+		    , #{santiCd}
+		    , #{santi}
+		    , #{touClassCd}
+		    , #{touClass}
+		    , #{kako}
+		    , #{planSu}
+		    , #{hontaiKakaku}
+		    , #{zeikomiKakaku}
+		    , #{shiireTan}
+		    , #{suplyTan}
+		    , #{kakoTan}
+		    , #{shizaiTan}
+		    , #{genryoTan}
+		    , #{itakTan}
+		    , 0
+		    , #{userid}
+		    , #{prgrm}
+		    , #{nchj}
+		    , #{userid}
+		    , #{prgrm}
+		    , #{nchj}
+		)
+	</insert>
+	<!-- 等階級コンボボックスリストを取得する。-->
+    <update id="nssp020ByPnks030" parameterType="Map" statementType="CALLABLE">
+        {CALL [nosan].NSSP020(#{userid,mode=IN},#{cqkikano,mode=IN},#{kyshincd,mode=IN},#{prgrm,mode=IN})}
+    </update>
+</mapper>

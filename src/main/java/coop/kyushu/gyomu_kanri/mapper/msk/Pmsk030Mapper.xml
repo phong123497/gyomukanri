@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PMSK030
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pmsk030
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/09/15 | ＡＭＣ               | 新規作成
+//================================================================================
+-->
+
+<mapper
+	namespace="coop.kyushu.gyomu_kanri.mapper.msk.Pmsk030Mapper">
+
+	<!-- 区分管理マスタ取得 -->
+	<select id="getKubunByPmsk030" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.msk.Pmsk030Entity">
+
+		SELECT
+		K1.RECKB AS reckb,
+		K1.MEICD AS meicd,
+		K1.KJNM AS kjnm,
+		K1.KNNM AS knnm,
+		K1.KJRM AS kjrm,
+		K1.KNRM AS knrm,
+		K1.KJRM3 AS kjrm3,
+		K1.KNRM3 AS knrm3,
+		K1.ZOK01 AS zok01,
+		K1.ZOK02 AS zok02,
+		K1.ZOK03 AS zok03,
+		K1.ZOK04 AS zok04,
+		K1.ZOK05 AS zok05,
+		K1.ZOK06 AS zok06,
+		K1.ZOK07 AS zok07,
+		K1.ZOK08 AS zok08,
+		K1.ZOK09 AS zok09,
+		K1.ZOK10 AS zok10,
+		K1.ZOK11 AS zok11,
+		K1.ZOK12 AS zok12,
+		K1.ZOK13 AS zok13,
+		K1.ZOK14 AS zok14,
+		K1.ZOK15 AS zok15,
+		K1.ZOK16 AS zok16,
+		K1.DELFLG AS delflg,
+		K1.MEI_CHECK AS meicheck
+		FROM [gyomu].MSKKBNKR AS K1
+		<where>
+			<if test="reckb != null and reckb != ''">
+				(K1.RECKB IS NULL OR K1.RECKB = #{reckb})
+			</if>
+			<if test="meicd != null and meicd != ''">
+				AND (K1.MEICD IS NULL OR K1.MEICD = #{meicd})
+			</if>
+			<if test="delflg != null and delflg != ''">
+				AND (K1.DELFLG IS NULL OR K1.DELFLG = #{delflg})
+			</if>
+		</where>
+	</select>
+
+	<!-- 名称マスタ(VIEW TABLE)取得 -->
+	<select id="getMeishoByPmsk030" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.msk.Pmsk030Entity">
+		SELECT
+      M1.RECKB AS reckb,
+      M1.MEICD AS meicd,
+      M1.KJNM AS kjnm,
+      M1.KNNM AS knnm,
+      M1.KJRM AS kjrm,
+      M1.KNRM AS knrm,
+      M1.KJRM3 AS kjrm3,
+      M1.KNRM3 AS knrm3,
+      M1.ZOK01 AS zok01,
+      M1.ZOK02 AS zok02,
+      M1.ZOK03 AS zok03,
+      M1.ZOK04 AS zok04,
+      M1.ZOK05 AS zok05,
+      M1.ZOK06 AS zok06,
+      M1.ZOK07 AS zok07,
+      M1.ZOK08 AS zok08,
+      M1.ZOK09 AS zok09,
+      M1.ZOK10 AS zok10,
+      M1.ZOK11 AS zok11,
+      M1.ZOK12 AS zok12,
+      M1.ZOK13 AS zok13,
+      M1.ZOK14 AS zok14,
+      M1.ZOK15 AS zok15,
+      M1.ZOK16 AS zok16,
+      M1.DELFLG AS delflg,
+      M1.TBL_ID AS tblId
+		FROM
+		  [gyomu].VW_MSTMEISM AS M1
+		<where>
+			<if test="reckb != null and reckb != '' ">
+				(M1.RECKB IS NULL OR M1.RECKB = #{reckb})
+			</if>
+			<if test="meicd != null and meicd != '' ">
+				AND (M1.MEICD IS NULL OR M1.MEICD = #{meicd})
+			</if>
+		</where>
+	</select>
+
+	<!-- 名称マスタに情報を登録する -->
+	<insert id="insertMeishoByPmsk030" parameterType="Map">
+		INSERT
+		INTO [gyomu].MSTMEISM
+      (
+        K_RECKB
+      , K_MEICD
+      , KJNM
+      , KNNM
+      , KJRM
+      , KNRM
+      , KJRM3
+      ,KNRM3
+      , DELFLG
+      , ADDYMD
+      , UPDYMD
+      , SKSI_USR
+      , SKSI_PRGRM
+      , SKSI_NCHJ
+      ,KUSHN_USR
+      , KUSHN_PRGRM
+      , KUSHN_NCHJ
+      )
+		VALUES (
+      #{reckb}
+      , #{meicd}
+      , #{kjnm}
+      , #{knnm}
+      , #{kjrm}
+      , #{knrm}
+      , #{kjrm3}
+      , #{knrm3}
+      , '0'
+      , #{toroKoshin}
+      ,#{toroKoshin}
+      , #{userId}
+      , 'PMSK030'
+      , #{sakuKoshinj}
+      , #{userId}
+      , 'PMSK030'
+      ,#{sakuKoshinj}
+		)
+	</insert>
+
+	<!-- 名称マスタ更新 -->
+	<update id="updateMeishoByPmsk030" parameterType="Map">
+		UPDATE
+		  [gyomu].MSTMEISM
+		SET
+      KJNM = #{kjnm},
+      KNNM = #{knnm},
+      KJRM = #{kjrm},
+      KNRM = #{knrm},
+      KJRM3 = #{kjrm3},
+      KNRM3 = #{knrm3},
+      DELFLG = #{delflg},
+      UPDYMD =#{kosinDay},
+      KUSHN_USR = #{userId},
+      KUSHN_PRGRM = 'PMSK030',
+      KUSHN_NCHJ =
+      #{koshinj}
+    WHERE
+      K_RECKB = #{reckb}
+      AND K_MEICD = #{meicd};
+	</update>
+
+  <!-- 区分管理マスタに情報を登録する-->
+	<insert id="insertKubunByPmsk030" parameterType="Map">
+		INSERT
+		INTO [gyomu].MSKKBNKR
+      (
+      RECKB,
+      MEICD,
+      KJNM,
+      KNNM,
+      KJRM,
+      KNRM,
+      KJRM3,
+      KNRM3,
+      ZOK01,
+      ZOK02,
+      ZOK03,
+      ZOK04,
+      ZOK05,
+      ZOK06,
+      ZOK07,
+      ZOK08,
+      ZOK09,
+      ZOK10,
+      ZOK11,
+      ZOK12,
+      ZOK13,
+      ZOK14,
+      ZOK15,
+      ZOK16,
+      DELFLG,
+      ADDYMD,
+      UPDYMD,
+      SKSI_USR,
+      SKSI_PRGRM,
+      SKSI_NCHJ,
+      KUSHN_USR,
+      KUSHN_PRGRM,
+      KUSHN_NCHJ,
+      MEI_CHECK
+      )
+		VALUES (
+       #{reckb},
+        #{meicd},
+        #{kjnm},
+        #{knnm},
+        #{kjrm},
+        #{knrm},
+        #{kjrm3},
+        #{knrm3},
+        #{zok01},
+        #{zok02},
+        #{zok03},
+        #{zok04},
+        #{zok05},
+        #{zok06},
+        #{zok07},
+        #{zok08},
+        #{zok09},
+        #{zok10},
+        #{zok11},
+        #{zok12},
+        #{zok13},
+        #{zok14},
+        #{zok15},
+        #{zok16},
+        '0',
+        #{toroKoshin},
+        #{toroKoshin},
+        #{userId},
+        'PMSK030',
+        #{sakuKoshinj}, 
+        #{userId},
+        'PMSK030',
+        #{sakuKoshinj}, 
+        '2'
+		)
+	</insert>
+
+  <!-- 区分管理マスタ更新 -->
+	<update id="updateKubunByPmsk030" parameterType="Map">
+		UPDATE
+		  [gyomu].MSKKBNKR
+		SET
+      KJNM = #{kjnm},
+      KNNM = #{knnm},
+      KJRM = #{kjrm},
+      KNRM = #{knrm},
+      KJRM3 = #{kjrm3},
+      KNRM3 = #{knrm3},
+      ZOK01 = #{zok01},
+      ZOK02 = #{zok02},
+      ZOK03 = #{zok03},
+      ZOK04 = #{zok04},
+      ZOK05 = #{zok05},
+      ZOK06 = #{zok06},
+      ZOK07 = #{zok07},
+      ZOK08 = #{zok08},
+      ZOK09 = #{zok09},
+      ZOK10 = #{zok10},
+      ZOK11 = #{zok11},
+      ZOK12 = #{zok12},
+      ZOK13 = #{zok13},
+      ZOK14 =#{zok14},
+      ZOK15 = #{zok15},
+      ZOK16 = #{zok16},
+      DELFLG = #{delflg},
+      UPDYMD = #{kosinDay},
+      KUSHN_USR = #{userId},
+      KUSHN_PRGRM = 'PMSK030',
+      KUSHN_NCHJ =#{koshinj},
+      MEI_CHECK= '2'
+    WHERE
+      RECKB = #{reckb}
+      AND MEICD = #{meicd};
+	</update>
+
+</mapper>
+

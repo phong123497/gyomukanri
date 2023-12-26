@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS060
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks060Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/06 | ＡＭＣ               | 新規作成
+// ===============================================================================
+-->
+
+<!-- 【農産企画支援】シミュレーション用データ出力マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks060Mapper">
+
+	<!-- シミュレーション用データを取得する -->
+	<select id="getSimulationDataByPnks060" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks060ListItem">
+		SELECT
+			B.CQKIKANO AS CQPROJNO
+			, B.KYSHINCD AS KYDKONYSHINCD
+			, B.BATCHNO
+			, B.SEICD AS KAIINSEIKYCD
+			, A.CQSHINCD AS CPKYUSHUSHINCD
+			, A.JANCD
+			, A.SHINKJ AS SHINNM
+			, A.KIKAKKJ AS STDD
+			, B.MAKERCD AS MAKERCD
+			, MM.MAKERKJ AS MAKERNM
+			, MS.SANTIKJ AS SANTINM
+			, MT.TOKAIKYUKJ AS TOUCLASSNM
+			, A.KUMITAN AS ZEIKOMIKUMINKAKAKU
+			, A.ZENUKUMI AS ZEINUKIKUMINKAKAKU
+			, B.BAITAN AS CPKYUSHUSUPLYURITAN
+			, B.GENTAN AS CPKYUSHUSHIIREGENTAN
+			, B.GENRYTAN AS GENRYOTAN
+			, B.KAKOTAN
+			<!-- 資材単価 -->
+			, B.SHIZTAN AS SHIZAITAN
+			<!-- 委託単価 -->
+			, B.ITAKUTAN AS ITAKUTAN
+			, B.KEIKAKSU AS PLANPOINT
+			, A.DAIBNCD AS DAICATG
+			, A.TYUBNCD AS CHUCATG
+			, A.SYOBNCD AS SHOCATG
+			, A.SYUHINKB AS COLLECTKBNNM
+			, B.KIKAKB AS TOKKAFLAG
+			<!-- 納品時容器 -->
+			, MK.KJNM AS NOHINYOUKI
+			
+		FROM
+			<!-- 農産企画商品マスタ -->
+			[nosan].NSMN010 A
+			
+		<!-- 農産企画商品情報マスタ -->
+		INNER JOIN  [nosan].NSMN020 B
+			ON A.CQKIKANO = B.CQKIKANO
+			AND A.KYSHINCD = B.KYSHINCD
+			<!-- 企画番号開始と企画番号終了への条件編集 -->
+			<choose>
+				<when test="projNoStart != '' and projNoEnd != ''">
+					AND B.CQKIKANO <![CDATA[ >= ]]> #{projNoStart}
+					AND B.CQKIKANO <![CDATA[ <= ]]> #{projNoEnd}
+				</when>
+				<when test='projNoStart != "" and projNoEnd == ""'>
+					AND B.CQKIKANO = #{projNoStart}
+				</when>
+				<when test='projNoStart == "" and projNoEnd != ""'>
+					AND B.CQKIKANO = #{projNoEnd}
+				</when>
+			</choose>
+			AND A.DEL_FLG = '0'
+			AND B.DEL_FLG = '0'
+		
+		<!-- 名称マスタ -->
+		LEFT JOIN [nosan].NSMM020 MK
+			ON MK.RECKB = '02'
+			AND MK.MEICD = A.YOKIKBN
+			AND MK.DEL_FLG = '0'
+			
+		<!-- メーカーマスタ -->
+		LEFT JOIN [nosan].NSMM060 MM
+			ON B.MAKERCD = MM.MAKERCD
+			AND MM.DEL_FLG = '0'
+			
+		<!-- 産地マスタ -->
+		LEFT JOIN [nosan].NSMT020 MS
+			ON B.KYSHINCD = MS.KYSHINCD
+			AND B.MAKERCD = MS.MAKERCD
+			AND B.SANTICD = MS.SANTICD
+			AND MS.DEL_FLG = '0'
+			
+		<!-- 等階級マスタ -->
+		LEFT JOIN [nosan].NSMT030 MT
+			ON B.KYSHINCD = MT.KYSHINCD
+			AND B.MAKERCD = MT.MAKERCD
+			AND B.TOKAIKYUCD = MT.TOKAIKYUCD
+			AND MT.DEL_FLG = '0'
+			
+		ORDER BY
+			B.CQKIKANO
+			, B.KYSHINCD
+			, B.BATCHNO
+	</select>
+</mapper>

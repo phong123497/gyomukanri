@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: PNKS080
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Pnks080Mapper
+//
+// <<Modification History>>
+// Version  | Date       | Updated By           | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/17 | ＡＭＣ               | 新規作成
+//================================================================================-->
+
+<!-- 【農産企画支援】バッチ情報一覧マッパー -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.nks.Pnks080Mapper">
+	
+	<!-- バッチ情報リスト取得 -->
+	<select id="getBatchInfListByPnks080" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks080ListItem">
+		SELECT  TOP 1000
+			NSMM040.BATCHNO
+		,	NSMM030.SEICD + ' ' + NSMM030.SEIKJRM AS 'targetKaiinSeiky'
+		,	NSMM040.BATCHKJ AS 'batchNm'
+		,	NSMM040.BATCHRKJ AS 'batchRyakusho'
+		,	NSMM040.KEIKAKUKEISU AS 'batchPlanKeisu'
+		,	NSMM040.YOSOKUKEISU AS 'weekYosokuKeisu'
+		,	CASE
+ 	 			WHEN NSMM040.BATCHFLG = '1'
+    				THEN '対象'
+    			ELSE ''
+    			END AS	'batchPlanTarget'
+		FROM
+			[nosan].NSMM040																		
+		LEFT JOIN
+			(
+				SELECT  TOP 100 PERCENT
+					NSMM030.SEICD
+				, Max(NSMM030.SEIKJRM) AS SEIKJRM
+				FROM
+					[nosan].NSMM030
+  					GROUP BY
+    					NSMM030.SEICD
+  					,   NSMM030.DEL_FLG
+  					,   NSMM030.TSBCD
+  				HAVING
+    				(
+      					((NSMM030.DEL_FLG) = '0')
+      					AND ((NSMM030.TSBCD) = '99999')
+    				)
+  				ORDER BY
+    				NSMM030.SEICD
+			)	NSMM030
+			ON NSMM030.SEICD = NSMM040.SEICD
+		WHERE
+				NSMM040.DEL_FLG = '0'
+		ORDER BY BATCHNO ASC
+	</select>
+	
+	<!-- バッチ情報取得 -->
+	<select id="getBatchInfByPnks080" parameterType="Map" resultType="coop.kyushu.gyomu_kanri.entity.nks.Pnks080ListItem">
+		SELECT
+			BATCHNO
+		FROM
+			[nosan].NSMM040
+		WHERE
+			 BATCHNO =  #{batchNo}
+	</select>
+
+	<!-- DBアクセス定義 -->
+	<delete id="deleteBatchInfListByPnks080" parameterType="List">
+		DELETE	FROM
+			[nosan].NSMM040
+		WHERE
+			BATCHNO IN 
+			<foreach item = "item" collection = "list" open = "(" separator = "," close = ")">
+				#{ item }
+			</foreach>
+	</delete>
+</mapper>

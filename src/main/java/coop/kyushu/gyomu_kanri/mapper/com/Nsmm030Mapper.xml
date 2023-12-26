@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+//================================================================================
+// ID: 共通
+// ProjectName: コープ九州事業連合様  ホストシステムリプレイス
+// SystemName: 業務管理
+// ClassName: Nsmm030Mapper
+//
+// <<Modification History>>
+// Version  | Date	   | Updated By		   | Content
+// =========+============+======================+=================================
+// 01.00.00 | 2023/07/10 | ＡＭＣ			   | 新規作成
+//================================================================================
+-->
+
+<!-- 会員生協マスタ マッパークラス -->
+<mapper namespace="coop.kyushu.gyomu_kanri.mapper.com.Nsmm030Mapper">
+
+	<!-- 会員生協リスト情報取得 -->
+	<select id="getkaiinSeikyList" parameterType="Map" 
+		resultType="coop.kyushu.gyomu_kanri.entity.com.Nsmm030Entity">
+  		SELECT SEICD		 AS 'seicd'
+			, TSBCD	   		AS 'tsbcd'
+			, SEIKJNM	 	AS 'seikjnm'
+			, SEIKNNM	 	AS 'seiknnm'
+			, SEIKJRM	 	AS 'seikjrm'
+			, SEIKNRM	 	AS 'seiknrm'
+			, TSBKJRM	 	AS 'tsbkjrm'
+			, TSBKNRM	 	AS 'tsbknrm'
+			, NSKSEICD		AS 'nskseicd'
+			, NSKTSBCD		AS 'nsktsbcd'
+			, NSKTANCD		AS 'nsktancd'
+			, SIYOUKB	 	AS 'siyoukb'
+			, JIGYOSKB		AS 'jigyoskb'
+			, DEL_FLG	 	AS 'delFlg'
+			, SKSI_USR		AS 'sksiUsr'
+			, SKSI_PRGRM  	AS 'sksiPrgrm'
+			, FORMAT(SKSI_NCHJ, 'yyyy/MM/dd HH:mm:ss.fff')	AS 'sksiNchj'
+			, KUSHN_USR				   					AS 'kushnUsr'
+			, KUSHN_PRGRM				 				AS 'kushnPrgrm'
+			, FORMAT(KUSHN_NCHJ, 'yyyy/MM/dd HH:mm:ss.fff')	AS 'kushnNchj'
+			, ID		  AS id 
+		FROM
+			[nosan].NSMM030
+		<where>
+			<if test="delFlg != null and delFlg !=''">
+				AND DEL_FLG = #{delFlg}
+			</if>
+			<if test="seicd != null and seicd !=''">
+				AND SEICD = #{seicd}
+			</if>
+		</where>
+		ORDER BY SEICD ASC
+	</select>
+</mapper>
